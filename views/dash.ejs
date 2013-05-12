@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+		<title>Smoke detector dashboard</title>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+</head>
+
+<body>
+<div id="wrapper" style="margin:10px auto; max-width:550px;font-family:Helvetica, Arial">
+	<h1>Dashboard</h1> 
+
+	<h2>Setup</h2>
+	<ul style="font-size:12px;color:#333">
+	    <li>Primary number : <strong><%= number1 %></strong></li>
+	    <li>Secondary number : <strong><%= number2 %></strong></li>
+	    <li>Mode : <strong><%= mode %></strong></li>
+	</ul>
+
+	<h2>Log</h2>
+	<ul id="log" style="font-size:12px;color:#666">
+	</div>
+</div>
+
+<script type="text/javascript" charset="utf-8">
+
+	var socket = io.connect('http://192.168.1.23:3000');
+	socket.on('connect', function () {
+		socket.on('detected', function (msg) {
+			$('#log').append('<li>'+msg.alarmType +' alarm at ' + msg.timeReceived + 'ms, with a '+msg.connectionTime+'ms connection time </li>')})
+		.on('notified', function (msg) {
+				$('#log').append('<li style="color:#AAA"> Notification message sent from '+msg.from +' to '+msg.to +'</li>')});
+	});
+
+
+/*	
+	var updateValue= function(primaryInput,secondaryInput){
+		$.post("/configure", { "primary": primaryInput,"secondary": secondaryInput } );
+	}
+*/
+
+</script>
+		
+		
+		
+		
+		 
+	</body>
+</html>
