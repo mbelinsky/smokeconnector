@@ -13,6 +13,9 @@ var secondaryNumber = "0";
 var twilioNumber = '+13473346102';
 var mode='Testing';
 
+var serverName='';
+var port=80;
+
 var client = require('twilio')('AC04996bfe824e324bc0740bc4eecec3b9', 'aa50d305cde9ce2cca2be786538f7f51');
 //var phone = client.getPhoneNumber(twilioNumber);
 var voiceMsg = 'Your smoke alarm has been set off. Notifications will be sent out to your selected contacts. Press 7 to cancel this alarm. Press 3 if you are not sure.';
@@ -74,7 +77,7 @@ app.get('/', function(req, res){
 	res.render('dash', {
 	    number1 : primaryNumber,
 		number2 : secondaryNumber,
-		mode : mode		
+		mode : mode
 	});
 });
 
