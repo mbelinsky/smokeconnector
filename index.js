@@ -7,7 +7,7 @@ var express = require('express')
 
 app.use(express.bodyParser());
 
-
+var port = process.env.PORT || 5000;
 var primaryNumber = "+13476819080";//"+13474669327";//
 var secondaryNumber = "0";
 var twilioNumber = '+13473346102';
@@ -81,4 +81,8 @@ app.get('/', function(req, res){
 	});
 });
 
-server.listen(3000);
+server.listen(port, function() {
+  console.log("Listening on " + port);
+});
+
+
