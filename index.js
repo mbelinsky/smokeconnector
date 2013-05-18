@@ -7,6 +7,9 @@ var express = require('express')
 
 app.use(express.bodyParser());
 
+var authtoken='';
+
+
 var port = process.env.PORT || 80;
 
 var primaryNumber = "+13476819080";//"+13474669327";//
@@ -27,7 +30,21 @@ app.set('view options', {
 });
 
 
+app.post('/call', function(req, res) {
+    //Validate that this request really came from Twilio...
+    if (twilio.validateExpressRequest(req, 'YOUR_AUTH_TOKEN')) {
+        var twiml = new twilio.TwimlResponse();
 
+        twiml.say('Hi. Thanks for subscribing.');
+            //.play('http://myserver.com/mysong.mp3');
+
+        res.type('text/xml');
+        res.send(twiml.toString());
+    }
+    else {
+        res.send('you are not twilio.  Buzz off.');
+    }
+});
 
 
 
