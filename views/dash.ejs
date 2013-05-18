@@ -1,54 +1,93 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-		<title>Smoke detector dashboard</title>
-		<script src="http://smokeconnector.nodejitsu.com/socket.io/socket.io.js"></script>
-		<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
-</head>
+  <head>
+    <title>AirLert</title>
+    <link href='http://fonts.googleapis.com/css?family=Arvo:400,700|Open+Sans:400,600,700' rel='stylesheet' type='text/css'>
+    <link href="bootstrap/css/bootstrap.css" rel="stylesheet" type="text/css">
+    <link href="styles.css" rel="stylesheet" type="text/css">
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js"></script>
+    <script src="bootstrap/js/bootstrap.js"></script>
+    <script>
+      $('#navbar').scrollspy()
+    </script>
+    <script src="http://smokeconnector.nodejitsu.com/socket.io/socket.io.js"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
+  </head>
+  <body>
+    <div class="container-fluid" data-spy="scroll" data-target=".navbar">
+      <div class="navbar navbar-fixed-top">
+        <div class="navbar-inner">
+          <a class="brand" href="#top">Airlert</a>
+          <ul class="nav pull-right">
+            <li class="active"><a href="#about">About</a></li>
+            <li><a href="#setup">Setup</a></li>
+            <li><a href="#log">Log</a></li>
+          </ul>
+      </div>
+    </div>
+      <div id="top" class="hero-unit">
+        <div class="row-fluid">
+          <img class="phone" src="images/phone.png">
+          <h1>Airlert</h1> 
+        </div>
+      </div>
+      <div id="log" class="section">
+        <h2>Log</h2>
+        <ul id="log"></ul>
+      </div>
+      <div id="about" class="section">
+        <h2>Breathe Easy.</h2>
+        <div class="row-fluid">
+          <div class="fire span3">
+            <img src="images/fire.svg">
+            <h3>Fire</h3>
+          </div>
+          <div class="co2 span3">
+            <img src="images/co2.svg">
+            <h3>Carbon Dioxide</h3>
+          </div>
+          <div class="flower span3">
+            <img src="images/flower.svg">
+            <h3>Pollen</h3>
+          </div>
+          <div class="smoketower span3">
+            <img src="images/smoketower.svg">
+            <h3>Air Pollution</h3>
+          </div>
+        </div>
 
-<body>
-<div id="wrapper" style="margin:10px auto; max-width:550px;font-family:Helvetica, Arial">
-	<h1>Dashboard</h1> 
+      </div>
+      <div id="setup" class="section"> 
+        <h2>Setup</h2>
+        <ul>
+          <li>Primary number : <strong>908-418-2532</strong></li>
+          <li>Secondary number : <strong>908-273-4047</strong></li>
+          <li>Mode : <strong>Carbon Dioxide</strong></li>
+        </ul>
+      </div>
+    </div>
+  <script type="text/javascript" charset="utf-8">
 
-	<h2>Setup</h2>
-	<ul style="font-size:12px;color:#333">
-	    <li>Primary number : <strong><%= number1 %></strong></li>
-	    <li>Secondary number : <strong><%= number2 %></strong></li>
-	    <li>Mode : <strong><%= mode %></strong></li>
-	</ul>
-
-	<h2>Log</h2>
-	<ul id="log" style="font-size:12px;color:#666">
-	</div>
-</div>
-
-<script type="text/javascript" charset="utf-8">
-
-	var socket = io.connect('smokeconnector.nodejitsu.com:80');
-	socket.on('connect', function () {
-		socket.on('detected', function (msg) {
-			$('#log').append('<li>'+msg.alarmType +' alarm at ' + msg.timeReceived + 'ms, with a '+msg.connectionTime+'ms connection time </li>')})
-		.on('notified', function (msg) {
-				$('#log').append('<li style="color:#AAA"> Notification message sent from '+msg.from +' to '+msg.to +'</li>')})
-		.on('newnumber', function (msg) {
-					$('#log').append('<li> New subscriber: '+ msg.number.From +' from '+ msg.number.FromZip+', '+msg.number.FromState+'</li>');
-					console.log(msg.number);
-					});
-					
-	});
+  var socket = io.connect('smokeconnector.nodejitsu.com:80');
+  socket.on('connect', function () {
+    socket.on('detected', function (msg) {
+      $('#log').append('<li>'+msg.alarmType +' alarm at ' + msg.timeReceived + 'ms, with a '+msg.connectionTime+'ms connection time </li>')})
+    .on('notified', function (msg) {
+        $('#log').append('<li style="color:#AAA"> Notification message sent from '+msg.from +' to '+msg.to +'</li>')})
+    .on('newnumber', function (msg) {
+          $('#log').append('<li> New subscriber: '+ msg.number.From +' from '+ msg.number.FromZip+', '+msg.number.FromState+'</li>');
+          console.log(msg.number);
+          });
+          
+  });
 
 
-/*	
-	var updateValue= function(primaryInput,secondaryInput){
-		$.post("/configure", { "primary": primaryInput,"secondary": secondaryInput } );
-	}
+/*  
+  var updateValue= function(primaryInput,secondaryInput){
+    $.post("/configure", { "primary": primaryInput,"secondary": secondaryInput } );
+  }
 */
 
 </script>
-		
-		
-		
-		
-		 
-	</body>
+  </body>
 </html>
