@@ -66,7 +66,7 @@ app.post('/alert',function(request, responseHttp){
 
 	
 //	console.log('Occured at:'+ request.body.eventTime + 'ms  Connection time:' + request.body.connectionTime + 'ms  ');
-	responseHttp.send(undefined);// echo the result back});
+	responseHttp.send(primaryNumber);// echo the result back});
 });
 
 
