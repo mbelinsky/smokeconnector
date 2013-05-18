@@ -6,27 +6,20 @@ var express = require('express')
 
 
 app.use(express.bodyParser());
-var accsid='ACeac2f16de43f1d54afc199dc5f7ae200';
-var authtoken='8d7f041fe6dd708664d01d472a2ed904';
+
+var authtoken='';
 
 
 var port = process.env.PORT || 80;
 
 var primaryNumber = "+13476819080";//"+13474669327";//
 var secondaryNumber = "0";
-var twilioNumber = '+14074776653';
+var twilioNumber = '+13473346102';
 var mode='Testing';
 
 var serverName='';
-
-var phoneNumbers=['+13476819080','+13474669327','+13476819080'];
-
-//var twilio = require('twilio');
-//var client = new twilio.RestClient('twilio')('ACeac2f16de43f1d54afc199dc5f7ae200', '8d7f041fe6dd708664d01d472a2ed904');
-
 var client = require('twilio')('AC04996bfe824e324bc0740bc4eecec3b9', 'aa50d305cde9ce2cca2be786538f7f51');
-
-
+//var phone = client.getPhoneNumber(twilioNumber);
 var voiceMsg = 'Your smoke alarm has been set off. Notifications will be sent out to your selected contacts. Press 7 to cancel this alarm. Press 3 if you are not sure.';
 
 app.use(express.static(__dirname + '/public'));
@@ -39,34 +32,21 @@ app.set('view options', {
 
 app.post('/call', function(req, res) {
     //Validate that this request really came from Twilio...
-//	console.log(req.body);
+    if (twilio.validateExpressRequest(req, 'YOUR_AUTH_TOKEN')) {
+        var twiml = new twilio.TwimlResponse();
 
-	io.sockets.emit('newnumber',{'number':req.body });
-	
+        twiml.say('Hi. Thanks for subscribing.');
+            //.play('http://myserver.com/mysong.mp3');
+
         res.type('text/xml');
-        res.send('');
+        res.send(twiml.toString());
+    }
+    else {
+        res.send('you are not twilio.  Buzz off.');
+    }
 });
 
 
-
-
-
-app.get('/test',function(request, responseHttp){
-
-	client.sendSms({
-	    to:primaryNumber, 
-	    from: twilioNumber, 
-	    body: 'Testing a message to you'
-		}, function(err, responseData) { //this function is executed when a response is received from Twilio
-		    if (!err) { // "err" is an error received during the request, if any
-		        console.log(responseData.from);
-				io.sockets.emit('notified', { 'from':responseData.from,'to':responseData.to}); //request.body.eventTime, "connectionTime":request.body.connectionTime ,"alarmType":request.body.alarmType });
-				}
-});
-
-responseHttp.send('Hey!');// echo
-
-});
 
 
 app.post('/alert',function(request, responseHttp){
@@ -75,7 +55,7 @@ app.post('/alert',function(request, responseHttp){
 	data.sunlight=request.body.connectionTime;
 	data.water=request.body.alarmType;};
 */	
-	
+	console.log("Smoke detected!!!");
 	console.log(request.body);
 	io.sockets.emit('detected', { 'timeReceived':request.body.eventTime, "connectionTime":request.body.connectionTime ,"alarmType":request.body.alarmType });
 	
@@ -90,20 +70,15 @@ app.post('/alert',function(request, responseHttp){
 	
 */	
 	
-	phoneNumbers.forEach(function(thisNumber)
-	{
-		console.log(thisNumber);
-		client.sendSms({
-		    to:thisNumber, 
-		    from: twilioNumber, 
-		    body: 'Fire detected at '+request.body.eventTime+'ms. There was a '+request.body.connectionTime+'ms connection time. The alarm type is: '+request.body.alarmType+'. Have a good day'
-			}, function(err, responseData) { //this function is executed when a response is received from Twilio
-			    if (!err) { // "err" is an error received during the request, if any
-			        console.log(responseData.from);
-					io.sockets.emit('notified', { 'from':responseData.from,'to':responseData.to}); //request.body.eventTime, "connectionTime":request.body.connectionTime ,"alarmType":request.body.alarmType });
-					}
-		});
-	
+	client.sendSms({
+	    to:primaryNumber, 
+	    from: twilioNumber, 
+	    body: 'Fire detected at '+request.body.eventTime+'ms. There was a '+request.body.connectionTime+'ms connection time. The alarm type is: '+request.body.alarmType+'. Have a good day'
+		}, function(err, responseData) { //this function is executed when a response is received from Twilio
+		    if (!err) { // "err" is an error received during the request, if any
+		        console.log(responseData.from);
+				io.sockets.emit('notified', { 'from':responseData.from,'to':responseData.to}); //request.body.eventTime, "connectionTime":request.body.connectionTime ,"alarmType":request.body.alarmType });
+				}
 	});
 
 	

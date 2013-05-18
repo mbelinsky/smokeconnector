@@ -29,12 +29,7 @@
 		socket.on('detected', function (msg) {
 			$('#log').append('<li>'+msg.alarmType +' alarm at ' + msg.timeReceived + 'ms, with a '+msg.connectionTime+'ms connection time </li>')})
 		.on('notified', function (msg) {
-				$('#log').append('<li style="color:#AAA"> Notification message sent from '+msg.from +' to '+msg.to +'</li>')})
-		.on('newnumber', function (msg) {
-					$('#log').append('<li> New subscriber: '+ msg.number.From +' from '+ msg.number.FromZip+', '+msg.number.FromState+'</li>');
-					console.log(msg.number);
-					});
-					
+				$('#log').append('<li style="color:#AAA"> Notification message sent from '+msg.from +' to '+msg.to +'</li>')});
 	});
 
 
