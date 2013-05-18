@@ -29,9 +29,10 @@
         <div class="row-fluid">
           <img class="phone" src="images/phone.png">
           <h1>Airlert</h1> 
+		<h1>+1 407-477-6653</h1>
         </div>
       </div>
-      <div id="log" class="section">
+      <div id="logs" class="section">
         <h2>Log</h2>
         <ul id="log"></ul>
       </div>
@@ -60,8 +61,7 @@
       <div id="setup" class="section"> 
         <h2>Setup</h2>
         <ul>
-          <li>Primary number : <strong>908-418-2532</strong></li>
-          <li>Secondary number : <strong>908-273-4047</strong></li>
+          <li>Alarm number : <strong>+1 407-477-6653</strong></li>
           <li>Mode : <strong>Carbon Dioxide</strong></li>
         </ul>
       </div>
@@ -71,7 +71,7 @@
 	var socket = io.connect('smokeconnector.nodejitsu.com:80');
 	socket.on('connect', function () {
 		socket.on('detected', function (msg) {
-			$('#log').append('<li> Smoke alarm happened at ' + msg.timeReceived + 'ms!!</li>')})
+			$('#log').append('<li> Air quality alert happened at ' + msg.timeReceived + '</li>')})
 		.on('notified', function (msg) {
 				$('#log').append('<li style="color:#AAA"> Notification message sent from '+msg.from +' to '+msg.to +'</li>')})
 		.on('newnumber', function (msg) {

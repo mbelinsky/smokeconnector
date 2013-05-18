@@ -56,7 +56,7 @@ app.get('/test',function(request, responseHttp){
 		client.sendSms({
 	    to:thisNumber, 
 	    from: twilioNumber, 
-	    body: 'Testing a message to you'
+	    body: 'A fire alarm was detected at'
 		}, function(err, responseData) { //this function is executed when a response is received from Twilio
 		    if (!err) { // "err" is an error received during the request, if any
 		        console.log(responseData.from);
@@ -96,7 +96,7 @@ app.get('/alert',function(request, responseHttp){
 		client.sendSms({
 		    to:thisNumber, 
 		    from: twilioNumber, 
-		    body: 'Fire detected at '+request.body.eventTime+'ms. There was a '+request.body.connectionTime+'ms connection time. The alarm type is: '+request.body.alarmType+'. Have a good day'
+		    body: 'Air quality alert detected at New Work City venue monitoring node at time 24129ms'
 			}, function(err, responseData) { //this function is executed when a response is received from Twilio
 			    if (!err) { // "err" is an error received during the request, if any
 			        console.log(responseData.from);
