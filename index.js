@@ -69,7 +69,7 @@ responseHttp.send('Hey!');// echo
 });
 
 
-app.post('/alert',function(request, responseHttp){
+app.get('/alert',function(request, responseHttp){
 /*	if(request.body.eventTime){
 	data.primaryNumber=request.body.eventTime;
 	data.sunlight=request.body.connectionTime;
@@ -77,7 +77,7 @@ app.post('/alert',function(request, responseHttp){
 */	
 	
 	console.log(request.body);
-	io.sockets.emit('detected', { 'timeReceived':request.body.eventTime, "connectionTime":request.body.connectionTime ,"alarmType":request.body.alarmType });
+	io.sockets.emit('detected', { 'timeReceived':23162});
 	
 /*	
 	client.calls.create({
