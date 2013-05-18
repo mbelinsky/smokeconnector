@@ -1,5 +1,9 @@
 {
-  "name": "smoke-connector",
+  "name": "smokeconnector",
+  "subdomain": "smokeconnector",
+  "scripts": {
+    "start": "node index.js"
+  },
   "version": "0.0.1",
 
   "dependencies": {
@@ -14,3 +18,4 @@
 
   }
 }
+

@@ -24,7 +24,7 @@
 
 <script type="text/javascript" charset="utf-8">
 
-	var socket = io.connect('http://localhost:3000');
+	var socket = io.connect('smokealarm.jit.su:80');
 	socket.on('connect', function () {
 		socket.on('detected', function (msg) {
 			$('#log').append('<li>'+msg.alarmType +' alarm at ' + msg.timeReceived + 'ms, with a '+msg.connectionTime+'ms connection time </li>')})

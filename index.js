@@ -7,7 +7,8 @@ var express = require('express')
 
 app.use(express.bodyParser());
 
-var port = process.env.PORT || 5000;
+var port = process.env.PORT || 80;
+
 var primaryNumber = "+13476819080";//"+13474669327";//
 var secondaryNumber = "0";
 var twilioNumber = '+13473346102';
@@ -24,6 +25,12 @@ app.set('view engine', 'ejs');
 app.set('view options', {
     layout: false
 });
+
+
+
+
+
+
 
 app.post('/alert',function(request, responseHttp){
 /*	if(request.body.eventTime){
@@ -49,7 +56,7 @@ app.post('/alert',function(request, responseHttp){
 	client.sendSms({
 	    to:primaryNumber, 
 	    from: twilioNumber, 
-	    body: 'Justin pressed the button at '+request.body.eventTime+'ms. There was a '+request.body.connectionTime+'ms connection time. The alarm type is: '+request.body.alarmType+'. Have a good day'
+	    body: 'Fire detected at '+request.body.eventTime+'ms. There was a '+request.body.connectionTime+'ms connection time. The alarm type is: '+request.body.alarmType+'. Have a good day'
 		}, function(err, responseData) { //this function is executed when a response is received from Twilio
 		    if (!err) { // "err" is an error received during the request, if any
 		        console.log(responseData.from);
