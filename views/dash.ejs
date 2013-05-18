@@ -27,7 +27,7 @@
 	var socket = io.connect('smokeconnector.nodejitsu.com:80');
 	socket.on('connect', function () {
 		socket.on('detected', function (msg) {
-			$('#log').append('<li>'+msg.alarmType +' alarm at ' + msg.timeReceived + 'ms, with a '+msg.connectionTime+'ms connection time </li>')})
+			$('#log').append('<li> Smoke alarm happened at ' + msg.timeReceived + 'ms!!</li>')})
 		.on('notified', function (msg) {
 				$('#log').append('<li style="color:#AAA"> Notification message sent from '+msg.from +' to '+msg.to +'</li>')})
 		.on('newnumber', function (msg) {
