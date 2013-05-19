@@ -10,7 +10,7 @@
     <script>
       $('#navbar').scrollspy()
     </script>
-    <script src="http://smokeconnector.nodejitsu.com/socket.io/socket.io.js"></script>
+    <script src="socket.io/socket.io.js"></script>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.3/jquery.min.js"></script>
   </head>
   <body>
@@ -29,12 +29,18 @@
         <div class="row-fluid">
           <img class="phone" src="images/phone.png">
           <h1>Airlert</h1> 
+<h1>+1 407-47-SMOKE</h1>
 		<h1>+1 407-477-6653</h1>
+		<h3 style="display:none">Socket server: <%=server%></h3>
         </div>
       </div>
       <div id="logs" class="section">
-        <h2>Log</h2>
+        <h2>Subscribers</h2>
         <ul id="log"></ul>
+      </div>
+      <div id="users" class="section"> 
+        <h2>Alerts</h2>
+        <ul id="alerts"></ul>
       </div>
       <div id="about" class="section">
         <h2>Breathe Easy.</h2>
@@ -56,38 +62,22 @@
             <h3>Air Pollution</h3>
           </div>
         </div>
-
-      </div>
-      <div id="setup" class="section"> 
-        <h2>Setup</h2>
-        <ul>
-          <li>Alarm number : <strong>+1 407-477-6653</strong></li>
-          <li>Mode : <strong>Carbon Dioxide</strong></li>
-        </ul>
-      </div>
     </div>
 <script type="text/javascript" charset="utf-8">
 
-	var socket = io.connect('smokeconnector.nodejitsu.com:80');
+	var socket = io.connect('<%=server%>');
 	socket.on('connect', function () {
-		socket.on('detected', function (msg) {
-			$('#log').append('<li> Air quality alert happened at ' + msg.timeReceived + '</li>')})
-		.on('notified', function (msg) {
-				$('#log').append('<li style="color:#AAA"> Notification message sent from '+msg.from +' to '+msg.to +'</li>')})
-		.on('newnumber', function (msg) {
+		socket.on('alert', function (msg) {
+			$('#alerts').append('<li> Air quality alert happened at ' + msg.timeReceived + 'ms </li>')})
+		.on('messageSent', function (msg) {
+				$('#alerts').append('<li> Notification message sent to '+msg.to +'</li>')})
+		.on('newNumber', function (msg) {
 					$('#log').append('<li> New subscriber: '+ msg.number.From +' from '+ msg.number.FromZip+', '+msg.number.FromState+'</li>');
 					console.log(msg.number);
 					});
 					
 	});
 
-
-/*	
-	var updateValue= function(primaryInput,secondaryInput){
-		$.post("/configure", { "primary": primaryInput,"secondary": secondaryInput } );
-	}
->>>>>>> 3096d5bdab5f3bda46677d9470c115d0f1d2db4e
-*/
 
 </script>
   </body>
