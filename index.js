@@ -28,7 +28,8 @@ var phoneNumbers=[justinNumber];
 //var twilio = require('twilio');
 //var client = new twilio.RestClient('twilio')('ACeac2f16de43f1d54afc199dc5f7ae200', '8d7f041fe6dd708664d01d472a2ed904');
 
-var client = require('twilio')('ACeac2f16de43f1d54afc199dc5f7ae200', '8d7f041fe6dd708664d01d472a2ed904');
+var twilio = require('twilio');
+var client= new twilio.RestClient('ACeac2f16de43f1d54afc199dc5f7ae200', '8d7f041fe6dd708664d01d472a2ed904');
 
 var voiceMsg = 'Your smoke alarm has been set off. Notifications will be sent out to your selected contacts. Press 7 to cancel this alarm. Press 3 if you are not sure.';
 
@@ -42,13 +43,30 @@ app.set('view options', {
 app.post('/call', function(req, res) {
     //Validate that this request really came from Twilio...
 //	console.log(req.body);
-	io.sockets.emit('newNumber',{'number':req.body });
+	io.sockets.emit('newNumber',{'obj':req.body });
+
 	phoneNumbers.push(req.body.From);
-        res.type('text/xml');
-        res.send('');
+	
+	var resp = new twilio.TwimlResponse();
+	resp.play(host+'/final.mp3');
+	resp.say({voice:'woman'},'Thank you for calling Canary, from '+req.body.CallerCity+'. Your number is now added to the subscriber list for air quality alerts.');
+	resp.gather({timeout:30,action:host+'/gathered',numDigits:1},function(){
+		this.say("Press a number and see it appear live.")
+	});
+	res.type('text/xml');
+	res.send(resp.toString());
 });
 
-
+app.post('/gathered', function(req, res) {
+    //Validate that this request really came from Twilio...
+//	console.log(req.body);
+	var resp = new twilio.TwimlResponse();
+	resp.say({voice:'woman',language:'de'}, 'Hast du etwas Zeit für mich\? Dann singe ich ein Lied für dich, Von 9'+req.body.Digits+' Luftballons Auf ihrem Weg zum Horizont. Denkst du vielleicht gerad an mich Dann singe ich ein Lied für dich Von 9'+req.body.Digits+' Luftballons Und dass so was von so was kommt. ');
+	resp.say({voice:'woman',language:'es'}, 'Debe ser el '+req.body.Digits+' que usas o el agua con la que te bañas, pero cada cosita que haces, a mí me parece una hazaña, me besaste esa noche cual si fuera el único dia de tu boca 	y cada vez que me acuerdo yo siento en mi pecho el peso de una roca.');
+	io.sockets.emit('numberPress',{'theobject':req.body,'number': req.body.Digits});
+	console.log(req);
+	res.send(resp.toString());
+});
 
 
 
@@ -80,7 +98,12 @@ app.get('/alert',function(request, responseHttp){
 });
 
 
-
+app.get('/twi', function(req, res){
+	var resp = new twilio.TwimlResponse();
+	resp.say('express sez - hello twilio!');
+	res.type('text/xml');
+	res.send(resp.toString());
+});
 
 
 app.get('/', function(req, res){
