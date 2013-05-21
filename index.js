@@ -49,9 +49,9 @@ app.post('/call', function(req, res) {
 	
 	var resp = new twilio.TwimlResponse();
 	resp.play(host+'/final.mp3');
-	resp.say({voice:'woman'},'Thank you for calling Canary, from '+req.body.CallerCity+'. Your number is now added to the subscriber list for air quality alerts.');
+	resp.say({voice:'woman'},'Thank you for calling Airlert, from '+req.body.CallerCity+'. Your number is now added to the subscriber list for air quality alerts.');
 	resp.gather({timeout:30,action:host+'/gathered',numDigits:1},function(){
-		this.say("Press a number and see it appear live.")
+		this.say("Press a number and see it appear Live.")
 	});
 	res.type('text/xml');
 	res.send(resp.toString());
@@ -98,12 +98,7 @@ app.get('/alert',function(request, responseHttp){
 });
 
 
-app.get('/twi', function(req, res){
-	var resp = new twilio.TwimlResponse();
-	resp.say('express sez - hello twilio!');
-	res.type('text/xml');
-	res.send(resp.toString());
-});
+
 
 
 app.get('/', function(req, res){
