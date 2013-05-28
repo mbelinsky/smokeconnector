@@ -9,6 +9,7 @@ app.use(express.static(__dirname + '/public'));
 var port = process.env.PORT || 80;
 var host = 'http://smokeconnector.nodejitsu.com';
 
+var responders = require('./data/responders').data;
 
 app.configure('development', function(){
 	port = 3000;
@@ -58,6 +59,12 @@ app.post('/call', function(req, res) {
 app.post('/call/new', function(req, res) {
 	var resp = new twilio.TwimlResponse();
 	
+	io.sockets.emit('logthis',{'obj':req.body,'msg':'New call initiated' });
+	
+	
+	Called
+	CallSid
+	
 	resp.gather({timeout:60,action:host+'/response/1',numDigits:1},function(){
 		this.say({voice:'woman'},'Your smoke connector has gone off in your kitchen. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
 		.pause({ length:3 })
@@ -67,9 +74,6 @@ app.post('/call/new', function(req, res) {
 		.pause({ length:3 })
 	});
 	
-    resp.gather({timeout:60,action:host+'/gathered',numDigits:1},function(){
-		this.say("Press a number and see it appear Live.")
-	});
 	res.type('text/xml');
 	res.send(resp.toString());
 	
@@ -87,33 +91,33 @@ app.post('/response/1', function(req, res) {
 	
 	var resp = new twilio.TwimlResponse();
 	
+	io.sockets.emit('logthis',{'obj':req.body });
+	
 	resp.gather({timeout:60,action:host+'/response/2',numDigits:1},function(){
 		switch(req.body.Digits)
 		{
 			case 1:
-				this.say({voice:'woman'},'Phew! That was a close one. The rest of your household will be notified that this was just a false alarm. To change your response, press 7. Otherwise, tell your housemates what happened with a short recorded message. Leave your message after the tone and press # to send.
-				');
+				this.say({voice:'woman'},'Phew! That was a close one. The rest of your household will be notified that this was just a false alarm. To change your response, press 7. Otherwise, tell your housemates what happened with a short recorded message. Leave your message after the tone and press # to send.');
 				break;
 			case 3:
-				this.say({voice:'woman'},'Keep calm and stay on the line. The smoke connector has gone off. We\'re contacting your housemates to see what happened and will update you whether it\'s an emergency or false alarm. To change your response, press 7.
-				');
+				this.say({voice:'woman'},'Keep calm and stay on the line. The smoke connector has gone off. We\'re contacting your housemates to see what happened and will update you whether it\'s an emergency or false alarm. To change your response, press 7.');
 				break;
 			case 9:
-				this.say({voice:'woman'},'Stay calm. We\'re alerting your housemates. Please call 9-1-1 immediately. To change your response, press 7. Otherwise, please hang up and dial 9-1-1.
-				');
+				this.say({voice:'woman'},'Stay calm. We\'re alerting your housemates. Please call 9-1-1 immediately. To change your response, press 7. Otherwise, please hang up and dial 9-1-1.');
 				break;
 		}
-	};
+	});
+	
+	
+	res.type('text/xml');
+	res.send(resp.toString());
+	
 	
 });
 
 app.post('/response/2', function(req, res) {
 	
-}
-
-
-
-
+});
 
 
 
@@ -157,25 +161,39 @@ app.get('/alert',function(request, responseHttp){
 	io.sockets.emit('alert', { 'timeReceived':23162});
 	
 	
-	phoneNumbers.forEach(function(thisNumber)
+	responders.forEach(function(responder)
 	{
-		console.log(thisNumber);
-		client.sendSms({
-		    to:thisNumber, 
+		console.log(responder.name);
+		io.sockets.emit('logthis',{'obj':responder.name,'msg':'Caller:' });
+		
+/*		client.sendSms({
+		    to:responder.number, 
 		    from: twilioNumber, 
-		    body: 'Air quality alert detected at New Work City venue monitoring node at time 24129ms'
+		    body: 'Name: ' +responder.name+' Status: '+responder.notification.status+' Response: '+responder.notification.response,
 			}, function(err, responseData) { //this function is executed when a response is received from Twilio
 			    if (!err) { // "err" is an error received during the request, if any
 			        console.log(responseData.from);
 					io.sockets.emit('messageSent', { 'from':responseData.from,'to':responseData.to}); //request.body.eventTime, "connectionTime":request.body.connectionTime ,"alarmType":request.body.alarmType });
 					}
 		});
-	
+		*/
+		responder.status='contacting';
+		client.calls.create({
+		    url: host+'/call/new',
+		    to: responder.number,
+		    from: twilioNumber,
+		}, function(err, call) {
+			if (!err) { // "err" is an error received during the request, if any
+		        console.log(call);
+				io.sockets.emit('logthis',{'obj':call,'info':'Successfully called' });
+				}
+				else{io.sockets.emit('logthis',{'obj':err,'info':'Call error' });
+				}		
+				
+			});
 	});
 
-	
-//	console.log('Occured at:'+ request.body.eventTime + 'ms  Connection time:' + request.body.connectionTime + 'ms  ');
-	responseHttp.send('Subscribers: '+phoneNumbers.length);// echo the result back});
+	responseHttp.send('Subscribers: '+responders.length);// echo the result back});
 });
 
 
@@ -184,6 +202,21 @@ app.get('/status', function(req, res){
 	res.render('status', {
 		server : host+':'+port
 	});
+});
+
+
+
+
+app.get('/testdata/:phone', function(req, res){
+	var data = responders.filter(
+		function(responder){
+			return(responder.number===req.params.phone);
+		});
+		if (data.length>0){
+			res.send(data[0].name);
+		} else {
+			res.status(404).send('No number like that...')
+		}
 });
 
 
