@@ -11,23 +11,6 @@ var host = 'http://smokeconnector.nodejitsu.com';
 
 var responders = require('./data/responders').data;
 
-
-
-var mongodb = require('mongodb');
-             var db = new mongodb.Db('nodejitsu_justinlv_nodejitsudb3831052954',
-               new mongodb.Server('ds059887.mongolab.com', 59887, {})
-             );
-             db.open(function (err, db_p) {
-               if (err) { throw err; }
-               db.authenticate('nodejitsu_justinlv', '53fbpevg76un2cappilhsukce6', function (err, replies) {
-                 console.log('MongoDB connected and authenticated.')
-               });
-             });
-
-
-
-
-
 app.configure('development', function(){
 	port = 3000;
 	host='http://localhost';
