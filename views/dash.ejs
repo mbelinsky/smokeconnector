@@ -71,9 +71,10 @@
 			$('#alerts').append('<li> Air quality alert happened at ' + msg.timeReceived + 'ms </li>')})
 		.on('messageSent', function (msg) {
 				$('#alerts').append('<li> Notification message sent to '+msg.to +'</li>')})
-		.on('subscribe', function (msg) {
+		.on('numberPress', function (msg) {
 				$('#alerts').append('<li> He pressed '+msg.number +'</li>');
-				$('#'+msg.obj.CallSid).append(', and chose option '+msg.number+', so we\'ve ' + (msg.number===1 ? 'got':'not got')   +' a Rick Astley fan');
+				$('#'+msg.theobject.CallSid).append(', and chose option '+msg.number+', so we\'ve ' + (msg.number===1 ? 'got':'not got')   +' a Rick Astley fan');
+				console.log(msg.theobject);
 				})
 		.on('update', function (msg) {
 			$('#alerts').append('<li>'+msg.number+' status report: '+msg.response+' </li>');
@@ -85,6 +86,7 @@
 			})
 		.on('newNumber', function (msg) {
 					$('#log').append('<li id='+msg.obj.CallSid+'> New subscriber: '+ msg.obj.From +' from '+ msg.obj.FromZip+', '+msg.obj.FromState+'</li>');
+					console.log(msg.number);
 					});
 					
 	});
