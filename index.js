@@ -117,7 +117,7 @@ app.post('/gathered', function(req, res) {
 	
 //	resp.say({voice:'woman',language:'de'}, 'Hast du etwas Zeit für mich\? Dann singe ich ein Lied für dich, Von 9'+req.body.Digits+' Luftballons Auf ihrem Weg zum Horizont. Denkst du vielleicht gerad an mich Dann singe ich ein Lied für dich Von 9'+req.body.Digits+' Luftballons Und dass so was von so was kommt. ');
 //	resp.say({voice:'woman',language:'es'}, 'Debe ser el '+req.body.Digits+' que usas o el agua con la que te bañas, pero cada cosita que haces, a mí me parece una hazaña, me besaste esa noche cual si fuera el único dia de tu boca 	y cada vez que me acuerdo yo siento en mi pecho el peso de una roca.');
-	io.sockets.emit('subscribed',{'obj':req.body,'language': req.body.Digits});
+	io.sockets.emit('subscribe',{'obj':req.body,'language': req.body.Digits});
 	console.log(req);
 	res.send(resp.toString());
 });

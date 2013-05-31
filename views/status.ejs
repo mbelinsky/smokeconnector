@@ -60,32 +60,7 @@
 		
 	</div>
 	
-	
-	
-	<script type="text/javascript" charset="utf-8">
 
-		var socket = io.connect('<%=server%>');
-		socket.on('connect', function () {
-			socket.on('alert', function (msg) {
-				$('#alerts').append('<li> Air quality alert happened at ' + msg.timeReceived + 'ms </li>'
-				)})
-			.on('messageSent', function (msg) {
-				$('#alerts').append('<li> Notification message sent to '+msg.to +'</li>'
-				)})
-			.on('newmessage', function (msg) {
-				$('#alerts').append('<li> New message received. Check console log.</li>');
-				console.log(msg);
-				)})
-			.on('numberPress', function (msg) {
-				$('#alerts').append('<li> He pressed '+msg.number +'</li>');
-				$('#'+msg.theobject.CallSid).append(', and chose option '+msg.number+', so we\'ve ' + (msg.number===1 ? 'got':'not got')   +' a  fan');
-				console.log(msg.theobject);
-				})
-			.on('newNumber', function (msg) {
-				$('#log').append('<li id='+msg.obj.CallSid+'> New subscriber: '+ msg.obj.From +' from '+ msg.obj.FromZip+', '+msg.obj.FromState+'</li>');
-				console.log(msg.number);
-				});
-			});
 	
 </body>
 </html>
