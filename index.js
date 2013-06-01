@@ -31,7 +31,7 @@ var mongodb = require('mongodb');
 app.configure('development', function(){
 	port = 3000;
 	host='http://localhost';
-	console.log('development');
+	console.log('development mode! '+host+':'+port);
 });
 
 var twilioNumber = '+14074776653';
@@ -39,8 +39,11 @@ var twilioNumber = '+14074776653';
 var justinNumber = "+13476819080";
 var markNumber = "+13474669327";
 
-var phoneNumbers=[justinNumber];
+var phoneNumbers=[];
 var phoneNumbers_es=[];
+var phoneContact=[];
+
+//phoneContact.push({'number':justinNumber,'language':'es'});
 
 //var twilio = require('twilio');
 //var client = new twilio.RestClient('twilio')('ACeac2f16de43f1d54afc199dc5f7ae200', '8d7f041fe6dd708664d01d472a2ed904');
@@ -82,13 +85,11 @@ send SMS's to people that are subscribed.
 //Incoming call
 app.post('/call', function(req, res) {
 	io.sockets.emit('newNumber',{'obj':req.body });
-	phoneNumbers.push(req.body.From);
-	
 	var resp = new twilio.TwimlResponse();
 	resp.play(host+'/final.mp3');
-	resp.say({voice:'woman'},'Thank you for calling from '+req.body.CallerCity+'. To subscribe in Spanish, press 2');
+	resp.say({voice:'woman'},'Thank you for calling from '+req.body.CallerCity+'.');
 	resp.gather({timeout:10,action:host+'/gathered',numDigits:1},function(){
-		this.say({voice:'woman',language:'es'},"To subscribe in Spanish press 2.")
+		this.say({voice:'woman',language:'en'},"To subscribe in Spanish press 2.")
 	});
 	res.type('text/xml');
 	res.send(resp.toString());
@@ -99,31 +100,31 @@ app.post('/call', function(req, res) {
 app.post('/gathered', function(req, res) {
     //Validate that this request really came from Twilio...
 //	console.log(req.body);
-	var choice=req.body.Digits;
+	var choice=parseInt(req.body.Digits);
 	
 	var resp = new twilio.TwimlResponse();
 	if(choice===1){
-		resp.say({voice:'woman',language:'en'}, 'Thanks for your response. You are now subscribed in English.');
-		phoneNumbers.push(req.body.From);
+		resp.say({voice:'woman',language:'en'}, 'You are now subscribed in English.');
+		phoneContact.push({'number':req.body.From,'language':'en'});
 	}
 	else if(choice===2){
-		resp.say({voice:'woman',language:'es'}, 'Thanks for your response. You are now subscribed in Spanish.');
-		phoneNumbers_es.push(req.body.From);
+		resp.say({voice:'woman',language:'en'}, 'You are now subscribed in Spanish.');
+		phoneContact.push({'number':req.body.From,'language':'es'});
 	}
 	else {
-		resp.say({voice:'woman',language:'es'}, 'You have been subscribed in English by default');
-		phoneNumbers.push(req.body.From);
+		resp.say({voice:'woman',language:'en'}, 'You have been subscribed in English by default');
+		phoneContact.push({'number':req.body.From,'language':'en'});
 	}
 	
 //	resp.say({voice:'woman',language:'de'}, 'Hast du etwas Zeit für mich\? Dann singe ich ein Lied für dich, Von 9'+req.body.Digits+' Luftballons Auf ihrem Weg zum Horizont. Denkst du vielleicht gerad an mich Dann singe ich ein Lied für dich Von 9'+req.body.Digits+' Luftballons Und dass so was von so was kommt. ');
 //	resp.say({voice:'woman',language:'es'}, 'Debe ser el '+req.body.Digits+' que usas o el agua con la que te bañas, pero cada cosita que haces, a mí me parece una hazaña, me besaste esa noche cual si fuera el único dia de tu boca 	y cada vez que me acuerdo yo siento en mi pecho el peso de una roca.');
-	io.sockets.emit('subscribe',{'obj':req.body,'language': req.body.Digits});
+	io.sockets.emit('subscribed',{'number':req.body.From,'choice': choice});
 	console.log(req);
 	res.send(resp.toString());
 });
 
 app.post('/gathered2', function(req, res) {
-	var choice=req.body.Digits;
+	var choice=parseInt(req.body.Digits);
 	var resp = new twilio.TwimlResponse();
 
 	res.send(resp.toString());
@@ -136,16 +137,26 @@ app.post('/call/new', function(req, res) {
 	
 	io.sockets.emit('logthis',{'obj':req.body,'info':'New call initiated' });
 	
-	
+	var lang='en';
 //	Called
 //	CallSid
 	
+	var data = phoneContact.filter(
+		function(contact){
+			return(contact.number===req.body.Called);
+		});
+		if (data.length>0){
+			lang=data[0].language;
+		}
+	
+	
+	
 	resp.gather({timeout:60,action:host+'/response/1',numDigits:1},function(){
-		this.say({voice:'woman'},'Your smoke connector has gone off in your kitchen. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
+		this.say({voice:'woman', language:lang},'Your smoke connector has gone off in your kitchen. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
 		.pause({ length:3 })
-		.say({voice:'woman', language:'en-gb'},'Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
+		.say({voice:'woman', language:lang},'Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
 		.pause({ length:3 })
-		.say({voice:'woman'},'Your smoke connector has gone off in your kitchen. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
+		.say({voice:'woman', language:lang},'Your smoke connector has gone off in your kitchen. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
 		.pause({ length:3 })
 	});
 	
@@ -158,6 +169,7 @@ app.post('/call/update', function(req, res) {
 	
 	
 });
+
 
 //Used for updating status of each callee
 app.post('/call/ended', function(req,res){
@@ -172,29 +184,35 @@ app.post('/response/1', function(req, res) {
 	
 	io.sockets.emit('logthis',{'obj':req.body,'info':'First response made' });
 	var number=req.body.Called;
-
+	var choice=parseInt(req.body.Digits);
 	var resp = new twilio.TwimlResponse();
 
-	switch(req.body.Digits)
+	switch(choice)
 	{
 		case 1:
-			io.sockets.emit('response',{'number':number,'response':'' });
+			io.sockets.emit('update',{'number':number,'status':'False' });
 			// Assign false to DB entry with this number.
 			// Call updated response function
-			this.say({voice:'woman'},'Phew! That was a close one. The rest of your household will be notified that this was just a false alarm. To change your response, press 7. Otherwise, tell your housemates what happened with a short recorded message. Leave your message after the tone and press # to send.');
+			resp.say({voice:'woman'},'Phew! That was a close one. The rest of your household will be notified that this was just a false alarm.');
 			break;
 		case 3:
+			io.sockets.emit('update',{'number':number,'status':'Not sure' });
+			
 			// Assign unsure to DB entry with this number
 			// Call updated response function			
-			this.say({voice:'woman'},'Keep calm and stay on the line. The smoke connector has gone off. We\'re contacting your housemates to see what happened and will update you whether it\'s an emergency or false alarm. To change your response, press 7.');
+			resp.say({voice:'woman'},'Keep calm. The smoke connector has gone off. We\'re contacting your housemates to see what happened.');
 			break;
 		case 9:
+			io.sockets.emit('update',{'number':number,'status':'Emergency' });
+		
 			// Assign emergency to DB entry with this number
 			// Call updated response function
-			this.say({voice:'woman'},'Stay calm. We\'re alerting your housemates. Please call 9-1-1 immediately. To change your response, press 7. Otherwise, please hang up and dial 9-1-1.');
+			resp.say({voice:'woman'},'Stay calm. We\'re alerting your housemates. Please call 9-1-1 immediately. To change your response, press 7. Otherwise, please hang up and dial 9-1-1.');
 			break;
 		default:
-			this.say({voice:'woman'},'Text here - Obviously you were listening to our presentation and not what number you were suppose to press.');
+			io.sockets.emit('update',{'number':number,'status':'Wrong number pressed' });
+		
+			resp.say({voice:'woman'},'Text here - Obviously you were listening to our presentation and not what number you were suppose to press.');
 	}
 	
 	
@@ -227,7 +245,7 @@ app.post('/response/2', function(req, res) {
 
 //Incoming SMS incomingsms
 app.post('/incomingsms', function(req, res) {
-	io.sockets.emit('newmessage',{'obj':req.body });
+	io.sockets.emit('newSMS',{'obj':req.body });
 	var message=req.body.Body;
 	if(message.toLowerCase().match('fire')){
 		io.sockets.emit('update',{'response': 'yes','number':req.body.From});
@@ -251,43 +269,25 @@ app.get('/alert',function(request, responseHttp){
 	console.log(request.body);
 	io.sockets.emit('alert', { 'timeReceived':23162});
 	
-	
-	responders.forEach(function(responder,index,respondersArray)
+	phoneContact.forEach(function(contact)
 	{
-		console.log(responder.name);
-		io.sockets.emit('logthis',{'obj':responder.name,'msg':'Caller:' });
-		
-/*		client.sendSms({
-		    to:responder.number, 
-		    from: twilioNumber, 
-		    body: 'Name: ' +responder.name+' Status: '+responder.notification.status+' Response: '+responder.notification.response,
-			}, function(err, responseData) { //this function is executed when a response is received from Twilio
-			    if (!err) { // "err" is an error received during the request, if any
-			        console.log(responseData.from);
-					io.sockets.emit('messageSent', { 'from':responseData.from,'to':responseData.to}); //request.body.eventTime, "connectionTime":request.body.connectionTime ,"alarmType":request.body.alarmType });
-					}
-		});
-		*/
-		respondersArray(index).status='contacting';
-		
+		io.sockets.emit('logthis',{'obj':contact,'info':'Caller' });
 		
 		client.calls.create({
 		    url: host+'/call/new',
 			status_callback: host+'/call/ended', //Notifies about ended call
-		    to: responder.number,
+		    to: contact.number,
 		    from: twilioNumber,
 		}, function(err, call) {
 			if (!err) { // "err" is an error received during the request, if any
 		        console.log(call);
-				io.sockets.emit('logthis',{'obj':call,'info':'Successfully called' });
-				}
-				else{io.sockets.emit('logthis',{'obj':err,'info':'Call error' });
-				}		
-				
+				io.sockets.emit('update',{'number':contact.number,'status':'Calling' });
+				}				
 			});
+		
 	});
 
-	responseHttp.send('Subscribers: '+responders.length);// echo the result back});
+	responseHttp.send('Subscribers: '+phoneContact.length);// echo the result back});
 });
 
 
@@ -302,12 +302,12 @@ app.get('/status', function(req, res){
 
 
 app.get('/testdata/:phone', function(req, res){
-	var data = responders.filter(
-		function(responder){
-			return(responder.number===req.params.phone);
+	var data = phoneContact.filter(
+		function(contact){
+			return(contact.number===req.params.phone);
 		});
 		if (data.length>0){
-			res.send(data[0].name);
+			res.send(data[0].language);
 		} else {
 			res.status(404).send('Number doesn\'t exist')
 		}
@@ -316,6 +316,7 @@ app.get('/testdata/:phone', function(req, res){
 
 app.get('/', function(req, res){
 	console.log(req.url);
+	
 	res.render('dash', {
 		server : host+':'+port
 	});
