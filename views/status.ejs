@@ -34,19 +34,20 @@
 			<p id="statusmessage">A fire was detected at 123 Broadway at 11:57AM!</p>
 			<p>Your responders are being contacted</p>
 		
-			<ul data-role="listview" data-inset="true" data-split-icon="forward">
+			<ul data-role="listview" data-inset="true" data-split-icon="forward" id="myList">
 			    <li data-role="list-divider">Lives with me <span class="ui-li-count">2</span></li>
-			    <li id="13474669327"><a href="index.html">
-					<img src="../thumbs/mark.png">
-			        <h3>Mark Belinsky</h3>
-			        <p>Calling...</p>
-					<a href=''>Call</a>
-			    </a></li>
+
 			    <li id="13476819080"><a href="index.html">
 			        <h3>Justin Alvey</h3>
 					<img src="../thumbs/justin.png">
-			        <p>Calling...</p>
+			        <p>Friend</p>
 					<a href=''><p>Call</p></a>
+			    </a></li>
+			    <li id="mark"><a href="index.html">
+					<img src="../thumbs/mark.png">
+			        <h3>Mark Belinsky</h3>
+			        <p>Friend</p>
+					<a href=''>Call</a>
 			    </a></li>
 			    <li data-role="list-divider">Lives near me <span class="ui-li-count">0</span></li>
 			    <li data-role="list-divider">Lives far away from me <span class="ui-li-count">0</span></li>
@@ -59,9 +60,19 @@
 		
 		
 	</div>
-	
+	<script type="text/javascript" charset="utf-8">
+		
+	var socket = io.connect('<%=server%>');
+	socket.on('connect', function () {
+		socket.on('newContact', function (msg) {
+			$('#mark').append('<li id=' + msg.number.replace("+","") + '><a href="index.html"> <img src="../thumbs/mark.png"> <h3>'+msg.number+'</h3><p>Friend</p> <a href="">Call</a>');			
+			})
+		.on('update', function (msg) {
+				$('#'+msg.number.replace('+','')).p.append(msg.status);
+		});
+	});
 
-	
+	</script>	
 </body>
 </html>
 	

@@ -84,6 +84,9 @@
 		.on('response', function (msg) {
 			console.log(msg);
 			})
+		.on('newSubscriber', function (msg) {
+			console.log(msg);
+			})
 		.on('logthis', function (msg) {
 			console.log(msg.info);
 			console.log(msg.obj);
