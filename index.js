@@ -115,12 +115,11 @@ app.post('/call', function(req, res) {
 	io.sockets.emit('newNumber',{'obj':req.body });
 	var resp = new twilio.TwimlResponse();
 	resp.play(host+'/final.mp3');
-	resp.play(voice_url+'welcome.mp3');
-	
-	resp.say({voice:'woman'},'Thank you for calling from '+req.body.CallerCity+'. ');
-	
+	resp.play(voice_url+'welcome.mp3');	
 	resp.gather({timeout:10,action:host+'/gathered',numDigits:1},function(){
-		this.say({voice:'woman',language:'en'},"To subscribe in English press 1. Spanish press 2. French press 3.")
+		this.play(voice_url+'choose_intro.mp3');
+		this.play(voice_url+'choose_af.mp3');
+		this.play(voice_url+'choose_canarynoise.mp3');
 	});
 	
 	res.type('text/xml');
@@ -130,8 +129,7 @@ app.post('/call', function(req, res) {
 
 
 app.post('/gathered', function(req, res) {
-    //Validate that this request really came from Twilio...
-//	console.log(req.body);
+
 	var choice=req.body.Digits;
 	
 	if(choice==='*'){
@@ -139,23 +137,29 @@ app.post('/gathered', function(req, res) {
 		    url:host+'/call'
 		}, function(err, text) {});
 	}
-	
+
 	var lang='en';
-	if(choice==='1'){
-		lang='en';		
-	}
-	else if(choice==='2'){
-		lang='fr';		
-	}
-	else {
-		lang='de';		
-	}
 	
 	var resp = new twilio.TwimlResponse();
-//	resp.play(host+'/final_'+lang+'.mp3');
+	
+	
+	switch(choice)
+	{
+	case '1':
+		lang='en';
+		break;
+	case '8':
+		lang='af';
+		break;
+	case '9':
+		resp.play(voice_url+'canarynoises.mp3');
+		break;
+	default:
+		lang='en';
+	}
+	
 	resp.gather( {timeout:30,action:host+'/gathered/2/'+lang,numDigits:1},function(){
-		this.say({voice:'woman',language:lang},"Thank you for calling. Pick a number and I will say it over and over again in my language.")
-//		this.play(host+'/final_'+lang+'.mp3');
+		this.play(voice_url+'updates_'+lang+'.mp3');
 		});
 	
 //	phoneContact.push({'number':req.body.From,'language':lang});
@@ -167,33 +171,128 @@ app.post('/gathered', function(req, res) {
 app.post('/gathered/2/:language', function(req, res) {
 	var lang=req.params.language;
 	var choice=req.body.Digits;
-
-	if(choice==='*'){
-		client.calls(req.body.CallSid).post({
-		    url:host+'/call'
-		}, function(err, text) {});
-	} 
+	
+	var twimlLang=lang;
+	if(twimlLang==='af'){
+		twimlLang='en';
+	}
 	
 	var resp = new twilio.TwimlResponse();
-//	resp.play(host+'/title_'+lang+'.mp3');
 	
-	resp.gather({timeout:30,action:host+'/gathered/2/'+lang,numDigits:1},function(){
-		this.say({voice:'woman',language:lang}, choice +' and '+choice + ' and '+choice+ '. Ok now pick another number, or 5 for a high five');
-		this.play(host+'/final.mp3');
-	});
+	
+	switch(choice)
+	{
+	case '1': //Home
+		resp.gather( {timeout:30,action:host+'/gathered/3/'+lang,numDigits:1},function(){
+			this.play(voice_url+'home1_'+lang+'.mp3');
+			this.say({voice:'man', language:twimlLang}, Math.floor(Math.random() * (160 - 50 + 1)) + 50 );
+			this.play(voice_url+'home2_'+lang+'.mp3');
+			this.say({voice:'man', language:twimlLang}, Math.floor(Math.random() * (160 - 50 + 1)) + 50 );
+		});
+		break;
+	case '2': //Outdoor
+		resp.gather( {timeout:30,action:host+'/gathered/3/'+lang,numDigits:1},function(){
+			this.play(voice_url+'outdoor1_'+lang+'.mp3');
+			this.say({voice:'man', language:twimlLang}, req.body.FromZip );
+			this.play(voice_url+'outdoor2_'+lang+'.mp3');
+			this.say({voice:'man', language:twimlLang}, Math.floor(Math.random() * (160 - 50 + 1)) + 50 );
+			this.play(voice_url+'outdoor3_'+lang+'.mp3');
+			this.say({voice:'man', language:twimlLang}, Math.floor(Math.random() * (160 - 50 + 1)) + 50 );
+			this.play(voice_url+'outdoor4_'+lang+'.mp3');
+		});
+		break;
+	case '3': //CO
+		resp.gather( {timeout:30,action:host+'/gathered/3/'+lang,numDigits:1},function(){
+			this.play(voice_url+'co1_'+lang+'.mp3');
+			this.say({voice:'man', language:twimlLang}, Math.floor(Math.random() * (160 - 50 + 1)) + 50 );
+			this.play(voice_url+'co2_'+lang+'.mp3');
+		});
+		break;
 		
-	if(choice==='5')
+	case '4': //Smoke
+		resp.gather( {timeout:30,action:host+'/gathered/3/'+lang,numDigits:1},function(){
+			this.play(voice_url+'smoke_'+lang+'.mp3');
+		});
+		break;
+		
+	case '5': //Battery
+	resp.gather( {timeout:30,action:host+'/gathered/3/'+lang,numDigits:1},function(){
+		this.play(voice_url+'battery_'+lang+'.mp3');
+		this.play(voice_url+'battery2_'+lang+'.mp3');
+	});
+		break;
+	case '9':
+		resp.play(voice_url+'canarynoise.mp3');
+		client.calls(req.body.CallSid).post({
+		    url:host+'/call/'+lang
+		}, function(err, text) {});
+		
+		break;
+		
+	case '0':
+		resp.play(voice_url+'canarynoises.mp3');
+		resp.say({voice:'woman', language:en},'Thanks!!');
+		
 		client.sms.messages.create({
 		    to:req.body.From,
 		    from:twilioNumber,
-		    body:'You pressed 5. High five! Oh and your language was '+lang
-		}, function(error, message) {});	
-	
+		    body:'Awesome. Team Canary thanks you for the high five. Follow us on @canarydetect or visit http://canarydetector.com!'
+		}, function(error, message) {});
+		
+		client.sms.messages.create({
+		    to:justinNumber,
+		    from:twilioNumber,
+		    body:req.body.From+' high fived you from '+req.body.FromZip+'! He listened to language '+lang
+		}, function(error, message) {});
+		
+		client.calls(req.body.CallSid).post({
+		    url:host+'/call/'+lang
+		}, function(err, text) {});
+		
+		
+		break;		
+		
+	case '*':
+		client.calls(req.body.CallSid).post({
+		    url:host+'/call'
+		}, function(err, text) {});
+		break;
+	default:
+		client.calls(req.body.CallSid).post({
+		    url:host+'/call'
+		}, function(err, text) {});
+	}
+		
 	res.send(resp.toString());
 });
 
 
+
+
+app.post('/gathered/3/:language', function(req, res) {
+
+	client.calls(req.body.CallSid).post({
+	    url:host+'/call'
+	}, function(err, text) {});
+	
+	client.sms.messages.create({
+	    to:req.body.From,
+	    from:twilioNumber,
+	    body:'Thank you for your call. For more information on how we plan on changing how New Yorkers view air quality data, visit http://canarydetector.com'
+	}, function(error, message) {});
+	
+	
+	
+	var resp = new twilio.TwimlResponse();
+	resp.say({voice:'woman', language:en},'Thanks for listening to updates from Justin\'s Canary'); //Should not end up hearing this
+	
+	res.send(resp.toString());
+	
+	
+});
 //Twiml response
+
+
 
 
 
