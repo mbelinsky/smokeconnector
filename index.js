@@ -152,7 +152,7 @@ app.post('/gathered', function(req, res) {
 		lang='af';
 		break;
 	case '9':
-		resp.play(voice_url+'canarynoises.mp3');
+		resp.play(voice_url+'canarynoise.mp3');
 		break;
 	default:
 		lang='en';
@@ -185,9 +185,9 @@ app.post('/gathered/2/:language', function(req, res) {
 	case '1': //Home
 		resp.gather( {timeout:30,action:host+'/gathered/3/'+lang,numDigits:1},function(){
 			this.play(voice_url+'home1_'+lang+'.mp3');
-			this.say({voice:'man', language:twimlLang}, Math.floor(Math.random() * (160 - 50 + 1)) + 50 );
+			this.say({voice:'man', language:twimlLang}, '42' );
 			this.play(voice_url+'home2_'+lang+'.mp3');
-			this.say({voice:'man', language:twimlLang}, Math.floor(Math.random() * (160 - 50 + 1)) + 50 );
+			this.say({voice:'man', language:twimlLang}, '36' );
 		});
 		break;
 	case '2': //Outdoor
@@ -195,16 +195,16 @@ app.post('/gathered/2/:language', function(req, res) {
 			this.play(voice_url+'outdoor1_'+lang+'.mp3');
 			this.say({voice:'man', language:twimlLang}, req.body.FromZip );
 			this.play(voice_url+'outdoor2_'+lang+'.mp3');
-			this.say({voice:'man', language:twimlLang}, Math.floor(Math.random() * (160 - 50 + 1)) + 50 );
+			this.say({voice:'man', language:twimlLang}, '43' );
 			this.play(voice_url+'outdoor3_'+lang+'.mp3');
-			this.say({voice:'man', language:twimlLang}, Math.floor(Math.random() * (160 - 50 + 1)) + 50 );
+			this.say({voice:'man', language:twimlLang}, '21' );
 			this.play(voice_url+'outdoor4_'+lang+'.mp3');
 		});
 		break;
 	case '3': //CO
 		resp.gather( {timeout:30,action:host+'/gathered/3/'+lang,numDigits:1},function(){
 			this.play(voice_url+'co1_'+lang+'.mp3');
-			this.say({voice:'man', language:twimlLang}, Math.floor(Math.random() * (160 - 50 + 1)) + 50 );
+			this.say({voice:'man', language:twimlLang}, '11' );
 			this.play(voice_url+'co2_'+lang+'.mp3');
 		});
 		break;
@@ -224,14 +224,14 @@ app.post('/gathered/2/:language', function(req, res) {
 	case '9':
 		resp.play(voice_url+'canarynoise.mp3');
 		client.calls(req.body.CallSid).post({
-		    url:host+'/call/'+lang
+		    url:host+'/call'
 		}, function(err, text) {});
 		
 		break;
 		
 	case '0':
-		resp.play(voice_url+'canarynoises.mp3');
 		resp.say({voice:'woman', language:en},'Thanks!!');
+		resp.play(voice_url+'canarynoise.mp3');
 		
 		client.sms.messages.create({
 		    to:req.body.From,
