@@ -118,6 +118,7 @@ app.post('/call', function(req, res) {
 	resp.gather({timeout:10,action:host+'/gathered',numDigits:1},function(){
 		this.play(voice_url+'welcome.mp3');	
 		this.play(voice_url+'choose_intro.mp3');
+		this.play(voice_url+'choose_ru.mp3');
 		this.play(voice_url+'choose_af.mp3');
 		this.play(voice_url+'choose_canarynoise.mp3');
 	});
@@ -148,6 +149,9 @@ app.post('/gathered', function(req, res) {
 	case '1':
 		lang='en';
 		break;
+	case '4':
+		lang='ru';
+		break;
 	case '8':
 		lang='af';
 		break;
@@ -155,7 +159,7 @@ app.post('/gathered', function(req, res) {
 		resp.play(voice_url+'canary1.mp3');
 		resp.play(voice_url+'canary2.mp3');
 		resp.play(voice_url+'canarynoise.mp3');
-		resp.play(voice_url+'canary4.mp3');
+		resp.play(voice_url+'canary3.mp3');
 		
 		break;
 	default:
@@ -173,6 +177,7 @@ app.post('/gathered', function(req, res) {
 });
 
 app.post('/gathered/2/:language', function(req, res) {
+	var toMsg=false;
 	var lang=req.params.language;
 	var choice=req.body.Digits;
 	
@@ -225,20 +230,10 @@ app.post('/gathered/2/:language', function(req, res) {
 		break;
 		
 	case '0':
-		resp.say({voice:'woman', language:'en'},'Thanks!! Be sure to check out our website or follow us on Twitter.');
+		resp.say({voice:'woman', language:'en'},'Thanks! Be sure to check out our website or follow us on Twitter.');
 		resp.play(voice_url+'canary2.mp3');
 		
-		client.sms.messages.create({
-		    to:req.body.From,
-		    from:twilioNumber,
-		    body:'Awesome. Team Canary thanks you for the high five. Follow us on @canarydetect or visit http://canarydetector.com!'
-		}, function(error, message) {});
-		
-		client.sms.messages.create({
-		    to:justinNumber,
-		    from:twilioNumber,
-		    body:req.body.From+' high fived you from '+req.body.FromZip+'! He listened to language '+lang
-		}, function(error, message) {});
+		toMsg=true;
 		
 	case '*':
 		client.calls(req.body.CallSid).post({
@@ -257,12 +252,32 @@ app.post('/gathered/2/:language', function(req, res) {
 	
 		
 	res.send(resp.toString());
+	
+	
+	if(toMsg){
+		client.sms.messages.create({
+		    to:req.body.From,
+		    from:twilioNumber,
+		    body:'Awesome. Team Canary thanks you for the high five. Follow us on @canarydetect or visit http://canarydetector.com!'
+		}, function(error, message) {});
+		
+		client.sms.messages.create({
+		    to:justinNumber,
+		    from:twilioNumber,
+		    body:req.body.From+' high fived you from '+req.body.FromZip+'! He listened to language '+lang
+		}, function(error, message) {});
+	}
 });
 
 
 
 
 app.post('/gathered/3/:language', function(req, res) {
+	
+	var resp = new twilio.TwimlResponse();
+	resp.say({voice:'woman', language:'en'},'Thanks for listening to updates from Justin\'s Canary'); //Should not end up hearing this
+
+	res.send(resp.toString());
 	
 	
 	if(req.body.Digits==='*'){
@@ -282,10 +297,7 @@ app.post('/gathered/3/:language', function(req, res) {
 		}, function(error, message) {});
 
 	}
-	var resp = new twilio.TwimlResponse();
-	resp.say({voice:'woman', language:'en'},'Thanks for listening to updates from Justin\'s Canary'); //Should not end up hearing this
 
-	res.send(resp.toString());
 
 });
 //Twiml response
