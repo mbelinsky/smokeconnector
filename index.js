@@ -34,6 +34,8 @@ app.configure('development', function(){
 
 var twilioNumber = '+12406692679';//+14074776653'; 1 2406 MY CNRY
 
+var twilioNumberSmoke = '+14074776653';
+
 var justinNumber = "+13476819080";
 var markNumber = "+13474669327";
 
@@ -509,8 +511,8 @@ app.post('/response/1', function(req, res) {
 	}
 	
 	client.sms.messages.create({
-	    to:req.body.From,
-	    from:twilioNumber,
+	    to:req.body.Called,
+	    from:twilioNumberSmoke,
 	    body:'Thanks for trialling our prototype. The final version will no doubt . To view data from the most recent event, go to http://goo.gl/rXJOU'//smokeconnector.nodejitsu.com/eventData
 	}, function(error, message) {});
 	
@@ -533,7 +535,7 @@ app.get('/alert',function(request, responseHttp){
 		    url: host+'/call/new',
 			status_callback: host+'/call/ended', //Notifies about ended call
 		    to: contact.number,
-		    from: twilioNumber,
+		    from: twilioNumberSmoke,
 		}, function(err, call) {
 			if (!err) { // "err" is an error received during the request, if any
 		        console.log(call);
