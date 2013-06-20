@@ -330,7 +330,7 @@ app.post('/signupcall', function(req, res) {
 	
 	var resp = new twilio.TwimlResponse();
 	resp.play(host+'/final.mp3');
-	resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerZip +' as a responder to emergencies at Mark\'s residence,  If there is an emergency and Mark may be in danger, you will be contacted.')
+	resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +' as a responder to emergencies at Mark\'s residence,  If there is an emergency and Mark may be in danger, you will be contacted.')
 	res.type('text/xml');
 	res.send(resp.toString());
 	
@@ -390,12 +390,9 @@ app.post('/incomingsms', function(req, res) {
 });
 
 
-app.post('/reset',function(request, responseHttp){
+app.get('/reset',function(request, responseHttp){
 	phoneContact=[];
-	console.log(request.body);
-	io.sockets.emit('testSock', { 'number':justinNumber, 'zip':'10001'});
-
-	responseHttp.send('Subscribers: '+phoneContact.length);// echo the result back});
+	responseHttp.send('Subscribers: '+phoneContact.length);
 });
 
 
