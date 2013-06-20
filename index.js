@@ -32,7 +32,7 @@ app.configure('development', function(){
 	console.log('development mode! '+host+':'+port);
 });
 
-var twilioNumber = '+14074776653';
+var twilioNumber = '+12406692679';//+14074776653'; 1 2406 MY CNRY
 
 var justinNumber = "+13476819080";
 var markNumber = "+13474669327";
@@ -53,7 +53,7 @@ var twilio = require('twilio');
 var client= new twilio.RestClient('ACeac2f16de43f1d54afc199dc5f7ae200', '8d7f041fe6dd708664d01d472a2ed904');
 
 var voiceMsg = 'Your smoke alarm has been set off. Notifications will be sent out to your selected contacts. Press 7 to cancel this alarm. Press 3 if you are not sure.';
-
+var smsMsg = '⊕ battery ♨ fire☀ air ⚠ monoxide ❁ pollen';
 
 app.set('view engine', 'ejs'); 
 app.set('view options', {
@@ -118,6 +118,7 @@ app.post('/call', function(req, res) {
 	resp.gather({timeout:10,action:host+'/gathered',numDigits:1},function(){
 		this.play(voice_url+'welcome.mp3');	
 		this.play(voice_url+'choose_intro.mp3');
+		this.play(voice_url+'choose_ch.mp3');
 		this.play(voice_url+'choose_ru.mp3');
 		this.play(voice_url+'choose_af.mp3');
 		this.play(voice_url+'choose_canarynoise.mp3');
@@ -148,6 +149,9 @@ app.post('/gathered', function(req, res) {
 	{
 	case '1':
 		lang='en';
+		break;
+	case '3':
+		lang='ch';
 		break;
 	case '4':
 		lang='ru';
@@ -222,15 +226,12 @@ app.post('/gathered/2/:language', function(req, res) {
 		resp.play(voice_url+'battery2_'+lang+'.mp3');
 		break;
 	case '9':
-		resp.play(voice_url+'canarynoise.mp3');
-		client.calls(req.body.CallSid).post({
-		    url:host+'/call'
-		}, function(err, text) {});
-		
+		resp.play(voice_url+'5thanks_en.mp3'); 
+		resp.play(voice_url+'canary2.mp3');
 		break;
 		
 	case '0':
-		resp.say({voice:'woman', language:'en'},'Thanks! Be sure to check out our website or follow us on Twitter.');
+		resp.play(voice_url+'5thanks_en.mp3'); 
 		resp.play(voice_url+'canary2.mp3');
 		
 		toMsg=true;
@@ -274,29 +275,32 @@ app.post('/gathered/2/:language', function(req, res) {
 
 app.post('/gathered/3/:language', function(req, res) {
 	
-	var resp = new twilio.TwimlResponse();
-	resp.say({voice:'woman', language:'en'},'Thanks for listening to updates from Justin\'s Canary'); //Should not end up hearing this
-
-	res.send(resp.toString());
-	
 	
 	if(req.body.Digits==='*'){
 		client.calls(req.body.CallSid).post({
 		    url:host+'/call'
 		}, function(err, text) {});
 	}
-	else{
-		client.calls(req.body.CallSid).post({
+	
+	var resp = new twilio.TwimlResponse();
+	resp.play(voice_url+'thanks.mp3'); 
+	resp.play(voice_url+'canary2.mp3'); 
+
+	res.send(resp.toString());
+	
+	
+	
+	/*	client.calls(req.body.CallSid).post({
 		    url:host+'/call'
-		}, function(err, text) {});
+		}, function(err, text) {}); */
 
-		client.sms.messages.create({
-		    to:req.body.From,
-		    from:twilioNumber,
-		    body:'Thank you for your call. For more information on how we plan on changing how New Yorkers view air quality data, visit canarydetector.com'
-		}, function(error, message) {});
+	client.sms.messages.create({
+	    to:req.body.From,
+	    from:twilioNumber,
+	    body:'Thank you for your call. For more information on how we plan on changing how New Yorkers view air quality data, visit canarydetector.com'
+	}, function(error, message) {});
 
-	}
+
 
 
 });
@@ -314,8 +318,19 @@ app.post('/call/ended', function(req,res){
 });
 
 
-
-
+app.post('/signupcall', function(req, res) {
+	io.sockets.emit('newNumber',{'obj':req.body });
+	
+	phoneContact.push({'number':req.body.From,'language':'en'});
+	
+	io.sockets.emit('newContact',{'number':req.body.From,'zip':zip,'lang':lang  });
+	
+	var resp = new twilio.TwimlResponse();
+	resp.play(host+'/final.mp3');
+	resp.say({voice:'woman', language:lang},'Thanks for signing up as a responder to Mark\'s residence. If there is an emergency you will be contacted.')
+	res.type('text/xml');
+	res.send(resp.toString());
+});
 
 
 
@@ -369,6 +384,17 @@ app.post('/incomingsms', function(req, res) {
 	
 	res.send('');
 });
+
+
+app.post('/reset',function(request, responseHttp){
+	phoneContact=[];
+	console.log(request.body);
+	io.sockets.emit('testSock', { 'number':justinNumber, 'zip':'10001'});
+
+	responseHttp.send('Subscribers: '+phoneContact.length);// echo the result back});
+});
+
+
 
 
 
@@ -434,11 +460,11 @@ app.post('/call/new', function(req, res) {
 		}
 	
 	resp.gather({timeout:60,action:host+'/response/1',numDigits:1},function(){
-		this.say({voice:'woman', language:lang},'Justin\'s Canary has reported a fire alarm at City Camp. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
+		this.say({voice:'woman', language:lang},'Mark\'s Canary has reported a fire alarm. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
 		.pause({ length:3 })
 		.say({voice:'woman', language:lang},'Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
 		.pause({ length:3 })
-		.say({voice:'woman', language:lang},'Justin\'s Canary has reported a fire alarm at City Camp. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
+		.say({voice:'woman', language:lang},'Mark\'s Canary has reported a fire alarm. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
 		.pause({ length:3 })
 	});
 	
@@ -481,6 +507,12 @@ app.post('/response/1', function(req, res) {
 		
 			resp.say({voice:'woman'},'Text here - Obviously you were listening to our presentation and not what number you were suppose to press.');
 	}
+	
+	client.sms.messages.create({
+	    to:req.body.From,
+	    from:twilioNumber,
+	    body:'Thanks for trialling our prototype. The final version will no doubt . To view data from the most recent event, go to http://goo.gl/rXJOU'//smokeconnector.nodejitsu.com/eventData
+	}, function(error, message) {});
 	
 	res.type('text/xml');
 	res.send(resp.toString());
@@ -527,6 +559,16 @@ app.get('/', function(req, res){
 		server : host+':'+port
 	});
 });
+
+
+app.get('/eventData', function(req, res){
+	console.log(req.url);
+	
+	res.render('graph', {
+		server : host+':'+port
+	});
+});
+
 
 server.listen(port, function() {
   console.log("Listening on " + port);
