@@ -322,16 +322,18 @@ app.post('/call/ended', function(req,res){
 
 app.post('/signupcall', function(req, res) {
 	io.sockets.emit('newNumber',{'obj':req.body });
+	io.sockets.emit('logthis',{'obj':req.body,'info':'New subscriber' });
 	
 	phoneContact.push({'number':req.body.From,'language':'en'});
 	
-	io.sockets.emit('newContact',{'number':req.body.From,'zip':zip,'lang':lang  });
+	io.sockets.emit('newContact',{'number':req.body.From,'zip':req.body.FromZip,'lang':'en'  });
 	
 	var resp = new twilio.TwimlResponse();
 	resp.play(host+'/final.mp3');
-	resp.say({voice:'woman', language:lang},'Thanks for signing up as a responder to Mark\'s residence. If there is an emergency you will be contacted.')
+	resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerZip +' as a responder to emergencies at Mark\'s residence,  If there is an emergency and Mark may be in danger, you will be contacted.')
 	res.type('text/xml');
 	res.send(resp.toString());
+	
 });
 
 
@@ -502,7 +504,7 @@ app.post('/response/1', function(req, res) {
 		
 			// Assign emergency to DB entry with this number
 			// Call updated response function
-			resp.say({voice:'woman'},'Stay calm. We\'re alerting your housemates. Please call 9-1-1 immediately. To change your response, press 7. Otherwise, please hang up and dial 9-1-1.');
+			resp.say({voice:'woman'},'Stay calm. We\'re alerting your housemates. Please call 911 immediately. To change your response, press 7. Otherwise, please hang up and dial 911.');
 			break;
 		default:
 			io.sockets.emit('update',{'number':number,'status':'Wrong number pressed' });
@@ -513,7 +515,7 @@ app.post('/response/1', function(req, res) {
 	client.sms.messages.create({
 	    to:req.body.Called,
 	    from:twilioNumberSmoke,
-	    body:'Thanks for trialling our prototype. The final version will no doubt . To view data from the most recent event, go to http://goo.gl/rXJOU'//smokeconnector.nodejitsu.com/eventData
+	    body:'Thanks for trialling our prototype. There are great things to come. To view data from the event you just saw, go to http://goo.gl/rXJOU'//smokeconnector.nodejitsu.com/eventData
 	}, function(error, message) {});
 	
 	res.type('text/xml');
