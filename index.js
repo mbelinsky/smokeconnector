@@ -436,10 +436,13 @@ app.get('/testdata/:phone', function(req, res){
 });
 
 app.get('/test/:mytext/:number', function(req, res){
-	
 	io.sockets.emit('update',{'number':req.params.number,'status':req.params.mytext });
+	res.send('Sent socket message update with number: '+ req.params.number+' status:'+req.params.mytext);
+});
 
-	res.send('Sent socket message newEvent with number: '+ req.params.number+' status:'+req.params.mytext);
+app.get('/testNew/:number/:zip/:state', function(req, res){
+	io.sockets.emit('newContact',{'number':req.params.number,'zip':req.params.zip,'state':req.params.state });
+	res.send('Sent socket message newContact with number: '+ req.params.number+' zip:'+req.params.zip);
 });
 
 //Call out in response to real alert
@@ -490,11 +493,11 @@ app.post('/response/1', function(req, res) {
 			resp.say({voice:'woman'},'Phew! That was a close one. The rest of your household will be notified that this was just a false alarm.');
 			break;
 		case 3:
-			io.sockets.emit('update',{'number':number,'status':'notsure' });
+			io.sockets.emit('update',{'number':number,'status':'uncertain' });
 			
 			// Assign unsure to DB entry with this number
 			// Call updated response function			
-			resp.say({voice:'woman'},'Keep calm. The smoke connector has gone off. We\'re contacting your housemates to see what happened.');
+			resp.say({voice:'woman'},'Keep calm. The smoke detector has gone off. We\'re contacting your housemates to see what happened.');
 			break;
 		case 9:
 			io.sockets.emit('update',{'number':number,'status':'emergency' });
@@ -504,7 +507,7 @@ app.post('/response/1', function(req, res) {
 			resp.say({voice:'woman'},'Stay calm. We\'re alerting your housemates. Please call 911 immediately. To change your response, press 7. Otherwise, please hang up and dial 911.');
 			break;
 		default:
-			io.sockets.emit('update',{'number':number,'status':'Wrong number pressed' });
+			io.sockets.emit('update',{'number':number,'status':'uncertain' });
 		
 			resp.say({voice:'woman'},'Text here - Obviously you were listening to our presentation and not what number you were suppose to press.');
 	}
@@ -566,6 +569,13 @@ app.get('/eventData', function(req, res){
 	console.log(req.url);
 	
 	res.render('graph', {
+		server : host+':'+port
+	});
+});
+
+app.get('/responses', function(req, res){
+	console.log(req.url);
+	res.render('responses', {
 		server : host+':'+port
 	});
 });

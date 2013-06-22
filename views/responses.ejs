@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+	  	<meta name="apple-mobile-web-app-capable" content="yes" />
+	
+		<title>Canary Smoke Alarm</title>
+		
+		<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+		<script src="socket.io/socket.io.js"></script>
+	    
+		<link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
+		<link rel="stylesheet" href="android.css" type="text/css" charset="utf-8">
+	</head>
+	
+	<body>
+		
+		
+		<ul id="home" title="Responders">
+			<li id='n14354728909'> 
+				<p class="number">+14354728909 <span style="color:#aaa">11211, NY</span></p>
+				<p class="status">Ready</p>
+			</li>
+			<li> 
+				<p class="number">+14354728909 <span style="color:#aaa">89101, LV</span></p>
+				<p class="status">Calling</p>
+			</li>
+			<li> 
+				<p class="number">+14354728909 <span style="color:#aaa">91201, CA</span></p>
+				<p class="status">Calling</p>
+			</li>
+			<li> 
+				<p class="number">+14354728909 <span style="color:#aaa">11211, NY</span></p>
+				<p class="status">False </p>
+			</li>
+			<li> 
+				<p class="number">+14354728909 <span style="color:#aaa">11211, NY</span></p>
+				<p class="status">Unsure</p>
+			</li>
+		</ul>
+		
+		<script type="text/javascript" charset="utf-8">
+		
+		
+		function capitaliseFirstLetter(string)
+		{
+		    return string.charAt(0).toUpperCase() + string.slice(1);
+		}
+		
+
+		var socket = io.connect('<%=server%>');
+		socket.on('connect', function () {
+			socket.on('newContact', function (msg) {
+				$('#home').append('<li id=n' + msg.number.replace("+","") + '> <p class="number">'+msg.number+' <span style="color:#aaa">'+msg.zip+', '+msg.state+'</span></p><p class="status">Ready</p></li>');			
+				})
+			.on('update', function (msg) {
+					var contact=$('#n'+msg.number.replace('+',''));
+					contact.children('p.status').html(capitaliseFirstLetter(msg.status));
+					if(msg.status==='emergency'){
+						contact.children('p.status').addClass('emergency');
+					}
+			});
+		});
+
+		</script>	
+			
+		
+	</body>
+</html>
