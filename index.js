@@ -326,14 +326,13 @@ app.post('/signupcall', function(req, res) {
 	
 	phoneContact.push({'number':req.body.From,'language':'en'});
 	
-	io.sockets.emit('newContact',{'number':req.body.From,'zip':req.body.FromZip,'lang':'en'  });
+	io.sockets.emit('newContact',{'number':req.body.From,'zip':req.body.CallerZip,'state':req.body.CallerState});
 	
 	var resp = new twilio.TwimlResponse();
 	resp.play(host+'/final.mp3');
 	resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +' as a responder to emergencies at Mark\'s residence,  If there is an emergency and Mark may be in danger, you will be contacted.')
 	res.type('text/xml');
 	res.send(resp.toString());
-	
 });
 
 
