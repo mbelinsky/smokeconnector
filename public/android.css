@@ -7,16 +7,60 @@ body {
 	background:		#181818;
 }
 
+#callme{
+	margin: 59px auto 0 auto;
+	width: 220px;
+	padding-left: 25px;
+}
 
-
-
-#home {
-	top: 25px;
+#logo{
+	top: 0px;
 	position: absolute;
 	margin: 0;
 	padding: 0;
 	left:0%;
 	width:100%;
+	background:url(images/canarylogo.png)  center center no-repeat;
+	height:65px;
+	
+}
+
+
+#header {
+	top: 0px;
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	left:0%;
+	width:100%;
+	height:94px;
+	background: #FFD400 ;
+	
+	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFD400), to(#FBB040)) ;
+	background: -webkit-linear-gradient(top, #FFD400, #FBB040) ;
+}
+
+
+#home {
+	top: 94px;
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	left:0%;
+	width:100%;
+}
+
+
+#bottom {
+	bottom: 0px;
+	height:50px;
+	position: absolute;
+	margin: 0;
+	padding: 0;
+	left:0%;
+	width:100%;
+	border-top: 1px solid rgba(255,255,255,.3);
+	
 }
 
 
@@ -32,7 +76,7 @@ p.number{
 
 li  {
 	min-height: 60px;
-font-size: 18px;
+font-size: 16px;
 font-weight: normal;
 border: 0px;
 border-bottom: 1px solid rgba(255,255,255,.3);
@@ -43,6 +87,12 @@ padding:15px 0 15px 10px;
 
 
 .emergency{
-	color:red;
+	color:maroon;
 }
+
+/* #DF535D; */
+
+
+
+
 
