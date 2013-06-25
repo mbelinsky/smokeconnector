@@ -15,7 +15,7 @@
 	
 	<body>
 		
-		<div id="header">
+		<div id="header" class="headerCanary">
 			<div id="logo">
 			</div>
 			<div id="callme">
@@ -23,22 +23,37 @@
 			</div>
 		</div>
 		<ul id="home" title="Responders">
-			<li id='n14354728909'> 
-				<p class="number">+14354728909 <span style="color:#aaa">11211, NY</span></p>
-				<p class="status">Ready</p>
-			</li>
-			
 			
 		</ul>
 		
 		
 		
 		
-		<div id="bottom">
-			<p style="text-align:right;padding-right:10px;"><a href="http://smokeconnector.nodejitsu.com/reset" target="_blank">Remove all</a></p>
+		 <p id="resetlink"><a href="http://smokeconnector.nodejitsu.com/reset" target="_blank">Reset all</a></p>
+		
+		
+		
+		<div id="bottom" class="shown">
+			<a href="tel:911" class="button">Call 911</a>
+			
+			<h3 id="firedetected"></h3>
+			
+			
+
 		</div>
 		
 		<script type="text/javascript" charset="utf-8">
+		
+		$(document).ready(function(){
+			$.get('responderslist', function(data) {
+				if(data.length>0){
+					console.log(data);
+					data.forEach(function(msg){
+						$('#home').append('<li id=n' + msg.number.replace("+","") + '> <p class="number">'+msg.number+' <span style="color:#aaa">'+msg.zip+', '+msg.state+'</span></p><p class="status">Ready</p></li>');
+					});
+				}
+			}, "json");
+		});
 		
 		
 		function capitaliseFirstLetter(string)
@@ -51,6 +66,11 @@
 		socket.on('connect', function () {
 			socket.on('newContact', function (msg) {
 				$('#home').append('<li id=n' + msg.number.replace("+","") + '> <p class="number">'+msg.number+' <span style="color:#aaa">'+msg.zip+', '+msg.state+'</span></p><p class="status">Ready</p></li>');			
+				})
+				.on('hardAlert',function(msg){
+					$('#header').removeClass().addClass('headerAlarm');
+					$('#bottom').show();
+					$('#firedetected').html("Fire detected at "+msg.time+'!');
 				})
 			.on('update', function (msg) {
 					var contact=$('#n'+msg.number.replace('+',''));

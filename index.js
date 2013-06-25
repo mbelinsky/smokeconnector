@@ -46,7 +46,7 @@ var phoneNumbers=[];
 var phoneNumbers_es=[];
 var phoneContact=[];
 
-//phoneContact.push({'number':justinNumber,'language':'es'});
+phoneContact.push({'number':justinNumber,'language':'en','state':'CA','zip':'94122'});
 
 //var twilio = require('twilio');
 //var client = new twilio.RestClient('twilio')('ACeac2f16de43f1d54afc199dc5f7ae200', '8d7f041fe6dd708664d01d472a2ed904');
@@ -61,7 +61,7 @@ app.set('view engine', 'ejs');
 app.set('view options', {
     layout: false
 });
-
+ 
 
 
 
@@ -86,7 +86,7 @@ function getDateTime() {
     var day  = date.getDate();
     day = (day < 10 ? "0" : "") + day;
 
-    return year + ":" + month + ":" + day + ":" + hour + ":" + min + ":" + sec;
+    return hour + ":" + min + ":" + sec;
 
 }
 
@@ -324,7 +324,7 @@ app.post('/signupcall', function(req, res) {
 	io.sockets.emit('newNumber',{'obj':req.body });
 	io.sockets.emit('logthis',{'obj':req.body,'info':'New subscriber' });
 	
-	phoneContact.push({'number':req.body.From,'language':'en'});
+	phoneContact.push({'number':req.body.From,'language':'en','state':req.body.CallerState,'zip':req.body.CallerZip});
 	
 	io.sockets.emit('newContact',{'number':req.body.From,'zip':req.body.CallerZip,'state':req.body.CallerState});
 	
@@ -563,6 +563,13 @@ app.get('/', function(req, res){
 	});
 });
 
+
+
+app.get('/responderslist', function(req, res){
+	console.log(req.url);
+	res.send(phoneContact);
+
+});
 
 app.get('/eventData', function(req, res){
 	console.log(req.url);

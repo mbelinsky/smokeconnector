@@ -34,10 +34,41 @@ body {
 	left:0%;
 	width:100%;
 	height:94px;
+}
+
+
+.headerCanary{
 	background: #FFD400 ;
-	
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFD400), to(#FBB040)) ;
 	background: -webkit-linear-gradient(top, #FFD400, #FBB040) ;
+}
+
+.headerAlarm{
+background: rgb(213, 60, 0) ;
+background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(213, 60, 0)), to(rgb(247, 87, 46))) ;
+background: -webkit-linear-gradient(top, rgb(213, 60, 0), rgb(247, 87, 46));
+}
+
+#firedetected{
+	bottom: 55px;
+	position: absolute;
+	color:rgb(213, 60, 0);
+	width:100%;
+	text-align:center;
+}
+
+
+.button{
+	text-align: center;
+	display: inline-block;
+	background-color: rgb(213, 60, 0);
+	border-radius: 5px;
+	color: white;
+	padding: 12px 18px;
+	font-size: 22px;
+	position:absolute;
+	bottom:10px;
+	left:10px;
 }
 
 
@@ -53,15 +84,26 @@ body {
 
 #bottom {
 	bottom: 0px;
-	height:50px;
 	position: absolute;
+	height:67px;
+	display:none;
 	margin: 0;
 	padding: 0;
 	left:0%;
 	width:100%;
 	border-top: 1px solid rgba(255,255,255,.3);
-	
 }
+
+
+
+#resetlink{
+	position: absolute;
+	bottom: 0px;	
+	width: 94%;
+	text-align: right;
+}
+
+
 
 
 p.status{
