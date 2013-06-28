@@ -4,7 +4,7 @@
   "scripts": {
     "start": "node index.js"
   },
-  "version": "0.0.1-160",
+  "version": "0.0.1-162",
   "dependencies": {
     "express": "3.x",
     "ejs": "0.8.x",

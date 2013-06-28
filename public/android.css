@@ -79,12 +79,14 @@ background: -webkit-linear-gradient(top, rgb(213, 60, 0), rgb(247, 87, 46));
 	padding: 0;
 	left:0%;
 	width:100%;
+	z-index:1;
+	
 }
 
 
 #bottom {
 	bottom: 0px;
-	position: absolute;
+	position: fixed;
 	height:67px;
 	display:none;
 	margin: 0;
@@ -92,17 +94,36 @@ background: -webkit-linear-gradient(top, rgb(213, 60, 0), rgb(247, 87, 46));
 	left:0%;
 	width:100%;
 	border-top: 1px solid rgba(255,255,255,.3);
+	z-index:2;
+	background:#181818;
+	
 }
 
 
 
 #resetlink{
-	position: absolute;
+	position: fixed;
 	bottom: 0px;	
 	width: 94%;
 	text-align: right;
+	z-index:3;
 }
 
+
+
+#resetbutton{
+	text-align: center;
+	display: inline-block;
+	background-color: #181818;
+	border-radius: 5px;
+	border-color: rgba(255,255,255,.3);
+	padding: 12px 18px;
+	position:fixed;
+	bottom:10px;
+	right:10px;
+	z-index:3;
+	
+}
 
 
 

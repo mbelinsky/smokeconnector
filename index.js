@@ -46,8 +46,9 @@ var phoneNumbers=[];
 var phoneNumbers_es=[];
 var phoneContact=[];
 
+for(var i=0;i<1;i++){
 phoneContact.push({'number':justinNumber,'language':'en','state':'CA','zip':'94122'});
-
+}
 //var twilio = require('twilio');
 //var client = new twilio.RestClient('twilio')('ACeac2f16de43f1d54afc199dc5f7ae200', '8d7f041fe6dd708664d01d472a2ed904');
 
@@ -503,18 +504,18 @@ app.post('/response/1', function(req, res) {
 		
 			// Assign emergency to DB entry with this number
 			// Call updated response function
-			resp.say({voice:'woman'},'Stay calm. We\'re alerting your housemates. Please call 911 immediately. To change your response, press 7. Otherwise, please hang up and dial 911.');
+			resp.say({voice:'woman'},'Stay calm. We\'re alerting your housemates. Please call 9 1 1 immediately. To change your response, press 7. Otherwise, please hang up and dial 9 1 1.');
 			break;
 		default:
 			io.sockets.emit('update',{'number':number,'status':'uncertain' });
 		
-			resp.say({voice:'woman'},'Text here - Obviously you were listening to our presentation and not what number you were suppose to press.');
+			resp.say({voice:'woman'},'Obviously you were listening to our presentation and not what number you were suppose to press.');
 	}
 	
 	client.sms.messages.create({
 	    to:req.body.Called,
 	    from:twilioNumberSmoke,
-	    body:'Thanks for trialling our prototype. There are great things to come. To view data from the event you just saw, go to http://goo.gl/rXJOU'//smokeconnector.nodejitsu.com/eventData
+	    body:'Thanks for trying our test demo, we hope you liked the Canary smart smoke detector. There are great things to come. To learn more, check out canarydetector.com'//smokeconnector.nodejitsu.com/eventData
 	}, function(error, message) {});
 	
 	res.type('text/xml');
