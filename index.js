@@ -28,7 +28,7 @@ var mongodb = require('mongodb');
 
 app.configure('development', function(){
 	port = 3000;
-	host='http://localhost';
+	host='localhost';
 	console.log('development mode! '+host+':'+port);
 });
 
@@ -440,9 +440,17 @@ app.get('/test/:mytext/:number', function(req, res){
 	res.send('Sent socket message update with number: '+ req.params.number+' status:'+req.params.mytext);
 });
 
-app.get('/testNew/:number/:zip/:state', function(req, res){
+app.get('/manualAdd/:number/:zip/:state', function(req, res){
+	phoneContact.push({'number':req.params.number,'language':'en','state':req.params.state,'zip':req.params.zip});
 	io.sockets.emit('newContact',{'number':req.params.number,'zip':req.params.zip,'state':req.params.state });
 	res.send('Sent socket message newContact with number: '+ req.params.number+' zip:'+req.params.zip);
+});
+
+app.post('/newContact', function(req,res){
+	phoneContact.push({'number':req.body.number,'language':'en','state':req.body.state,'zip':req.body.zip});
+	io.sockets.emit('newContact',{'number':req.body.number,'zip':req.body.zip,'state':req.body.state });
+	res.send('Received: ' + req.body.number+' zip:'+req.body.zip+' state:'+req.body.state);	
+	console.log('Received: ' + req.body.number+' zip:'+req.body.zip+' state:'+req.body.state);
 });
 
 //Call out in response to real alert
@@ -568,6 +576,8 @@ app.get('/', function(req, res){
 
 app.get('/responderslist', function(req, res){
 	console.log(req.url);
+	
+	
 	res.send(phoneContact);
 
 });

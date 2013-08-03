@@ -73,7 +73,7 @@
 					$('#firedetected').html("Fire detected at "+msg.time+'!');
 				})
 			.on('update', function (msg) {
-					var contact=$('#n'+msg.number.replace('+',''));
+					var contact=$('#n'+msg.number.replace('+','') );
 					contact.children('p.status').html(capitaliseFirstLetter(msg.status));
 					if(msg.status==='emergency'){
 						contact.children('p.status').addClass('emergency');
