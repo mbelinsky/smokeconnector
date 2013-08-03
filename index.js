@@ -549,7 +549,10 @@ app.get('/alert',function(request, responseHttp){
 		}, function(err, call) {
 			if (!err) { // "err" is an error received during the request, if any
 		        console.log(call);
-				io.sockets.emit('update',{'number':contact.number,'status':'calling' });
+				io.sockets.emit('update',{'number':contact.number,'status':'Calling' });
+				}
+				else{
+					io.sockets.emit('update',{'number':contact.number,'status':'Not Available' });
 				}				
 			});
 	});
