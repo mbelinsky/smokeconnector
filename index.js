@@ -119,9 +119,7 @@ app.post('/signupcall', function(req, res) {
 	resp.play(host+'/final.mp3');
 	var formattedNumber=req.body.From.replace('+','').replace('(','').replace(')','').replace(' ','').replace('-','');
 	
-	if(phoneContact.length<5){
-		io.sockets.emit('newNumber',{'obj':req.body });	
-		io.sockets.emit('newContact',{'number':formattedNumber,'zip':req.body.CallerZip,'state':req.body.CallerState});
+	if(phoneContact.length<11){
 		
 		var place=req.body.CallerZip+', ' +req.body.CallerState;
 		//APN add. Send formatted number and place
@@ -140,12 +138,14 @@ app.post('/signupcall', function(req, res) {
 			else if (err) { }
 			else {}
 	    });
-		
+		io.sockets.emit('newContact',{'number':formattedNumber,'place':place});
+	
 		phoneContact.push({'number':formattedNumber,'place':place});
+		
 		resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +' as a responder to emergencies at Justin\'s residence,  If there is an emergency and Justin may be in danger, you will be contacted.');
 	}
 	else{
-		resp.say({voice:'woman', language:'en'},'Hi there. As there are already 6 responders, you will be notified of updates by text message');
+		resp.say({voice:'woman', language:'en'},'Hi there. As there are already 10 responders, you will be notified of updates by text message');
 		thankOnly.push(req.body.From);
 	}
 	
@@ -166,7 +166,20 @@ app.post('/newsms', function(req, res) {
 	
 	if (data.length>0){
 		//Send message via APNS to app, with data.number and data
-		//If Contact has firstName, relay to all contacts
+			var agent = app.get('apn');
+		  	agent.createMessage()
+		    .device(myToken)
+
+			.set('notificationType','newMessage')
+			.set('number',number)
+			.set('content',message)
+			.alert('+'+number+': '+message)
+		//	.alert('action-loc-key','Action text')
+		    .send(function (err) {
+			    if (err && err.toJSON) {} 
+				else if (err) {}
+				else {}
+		    });
 	} else {
 		thankOnly.push(req.body.From);
 		//Send thank you message back (or not), and don't do anything else.
@@ -176,27 +189,24 @@ app.post('/newsms', function(req, res) {
 });
 
 
-
-
 //Posts from App
 
 app.post('/settoken', function(req, responseHttp) {
 //	req.body.token
+	myToken=req.body.token;
 	console.log('Token received is: '+req.body.token);
 	responseHttp.send('');
 });
 
 app.post('/newMessage', function(req, responseHttp) {
-
 	console.log('New message from '+req.body.number+': '+req.body.content);
-	
 //Relay message to all responders	
 	phoneContact.forEach(function(contact)
 	{
 		client.sms.messages.create({
 		    to:number,
 		    from:twilioNumber,
-		    body:contact.firstName+': '+req.body.content
+		    body:'Justin: '+req.body.content
 		}, function(error, message) {
 		    if (!error) {}
 		    else {}
@@ -207,8 +217,7 @@ app.post('/newMessage', function(req, responseHttp) {
 });
 
 app.post('/addContact', function(req, responseHttp) {
-//	req.body.token
-	console.log('New contact: '+req.body.firstName+' '+req.body.lastName+': '+req.body.number);
+	phoneContact.push({'number':req.body.number,'place':req.body.firstName+' '+req.body.lastName});	
 	responseHttp.send('');
 });
 
@@ -217,11 +226,14 @@ app.get('/reset',function(request, responseHttp){
 });
 
 app.post('/thank', function(req, responseHttp) {
-	client.sms.messages.create({
-	    to:req.body.Called,
-	    from:twilioNumberSmoke,
-	    body:'Thanks for viewing our test demo, we hope you liked the Birdi smart smoke detector. There are great things to come. To learn more, check out birdi.co'
-	}, function(error, message) {});
+	thankOnly.forEach(function(tosms)
+	{
+		client.sms.messages.create({
+		    to:tosms,
+		    from:twilioNumberSmoke,
+		    body:'Thanks for viewing our test demo, we hope you liked the Birdi smart smoke detector. There are great things to come. To learn more, check out birdi.co'
+		}, function(error, message) {});
+	});
 });
 
 
@@ -240,7 +252,7 @@ app.get('/reset',function(request, responseHttp){
 app.get('/alert',function(request, responseHttp){
 
 	console.log(request.body);
-	io.sockets.emit('hardAlert', { 'time':getDateTime() });
+	io.sockets.emit('alert', { 'time':getDateTime() });
 
 	//Send APN
 	
@@ -254,10 +266,13 @@ app.get('/alert',function(request, responseHttp){
 		}, function(err, call) {
 			if (!err) { // "err" is an error received during the request, if any
 		        console.log(call);
-				io.sockets.emit('updateResponder',{'number':contact.number,'status':'Calling' });
+				io.sockets.emit('updateStatus',{'number':contact.number,'status':'Calling' }); //mobile
+				io.sockets.emit('updateResponder',{'number':contact.number,'status':'Calling' }); //iOS
+				
 				}
 			else{
-				io.sockets.emit('updateResponder',{'number':contact.number,'status':'Not Available' });
+				io.sockets.emit('updateStatus',{'number':contact.number,'status':'Not Available' }); //mobile
+				io.sockets.emit('updateResponder',{'number':contact.number,'status':'Not Available' }); //iOS
 				//Send text message
 			}				
 			});
@@ -268,7 +283,6 @@ app.get('/alert',function(request, responseHttp){
 //Call out in response to real alert
 app.post('/call/new', function(req, res) {
 	var resp = new twilio.TwimlResponse();
-	io.sockets.emit('logthis',{'obj':req.body,'info':'New call initiated' });
 	var lang='en';
 //	Called
 //	CallSid
@@ -281,46 +295,64 @@ app.post('/call/new', function(req, res) {
 		.say({voice:'woman', language:lang},'Justin\'s birdy has reported a fire alarm. Press 9 if this is an emergency. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. ')
 		.pause({ length:3 })
 	});
-	
 	res.type('text/xml');
 	res.send(resp.toString());
-	
 });
 
 app.post('/response/1', function(req, res) {
 	
 	io.sockets.emit('logthis',{'obj':req.body,'info':'First response made' });
-	var number=req.body.Called;
+	var number=req.body.Called.replace('+','').replace('(','').replace(')','').replace(' ','').replace('-','');
 	var choice=parseInt(req.body.Digits);
 	var resp = new twilio.TwimlResponse();
-
+	var report='unsure';
+	
 	switch(choice)
 	{
 		case 1:
-			io.sockets.emit('update',{'number':number,'status':'false' });
+			io.sockets.emit('updateStatus',{'number':number,'status':'false' });
 			// Assign false to DB entry with this number.
 			// Call updated response function
+			status='false';
+			
+			report='false alarm';
 			resp.say({voice:'woman'},'Phew! That was a close one. The rest of your household will be notified that this was just a false alarm.');
 			break;
 		case 3:
-			io.sockets.emit('update',{'number':number,'status':'uncertain' });
-			
+			io.sockets.emit('updateStatus',{'number':number,'status':'uncertain' });
+			status='notsure';
 			// Assign unsure to DB entry with this number
 			// Call updated response function			
 			resp.say({voice:'woman'},'Keep calm. The smoke detector has gone off. We\'re contacting your housemates to see what happened.');
 			break;
 		case 9:
-			io.sockets.emit('update',{'number':number,'status':'emergency' });
-		
+			io.sockets.emit('updateStatus',{'number':number,'status':'emergency' });
+			status='emergency';
+			report='an emergency';
+			
 			// Assign emergency to DB entry with this number
 			// Call updated response function
 			resp.say({voice:'woman'},'Stay calm. We\'re alerting your housemates. Please call 9 1 1 immediately. To change your response, press 7. Otherwise, please hang up and dial 9 1 1.');
 			break;
 		default:
-			io.sockets.emit('update',{'number':number,'status':'uncertain' });
-		
+			io.sockets.emit('updateStatus',{'number':number,'status':'uncertain' });
 			resp.say({voice:'woman'},'Obviously you were listening to our presentation and not what number you were suppose to press.');
 	}
+	
+		var agent = app.get('apn');
+	  	agent.createMessage()
+	    .device(myToken)
+
+		.set('notificationType','updateFeedback')
+		.set('number',number)
+		.set('content',status)
+		.alert(number+' reported '+report)
+	//	.alert('action-loc-key','Action text')
+	    .send(function (err) {
+		    if (err && err.toJSON) {  } 
+			else if (err) {  } 
+			else {  } 
+	    });
 	
 	res.type('text/xml');
 	res.send(resp.toString());
@@ -336,34 +368,116 @@ app.get('/responderslist', function(req, res){
 
 
 
-//Trigger real alert
-app.get('/alert',function(request, responseHttp){
+//APNS tests
 
-	console.log(request.body);
-	io.sockets.emit('hardAlert', { 'time':getDateTime() });
+
+app.get('test/newStatus/:statusType', function (req, res) {
+	var agent = app.get('apn');
+	var alertText ='Updated status';
 	
-	phoneContact.forEach(function(contact)
-	{
-		
-		client.calls.create({
-		    url: host+'/call/new',
-			status_callback: host+'/call/ended', //Notifies about ended call
-		    to: contact.number,
-		    from: twilioNumberSmoke,
-		}, function(err, call) {
-			if (!err) { // "err" is an error received during the request, if any
-		        console.log(call);
-				io.sockets.emit('update',{'number':contact.number,'status':'Calling' });
-				}
-				else{
-					io.sockets.emit('update',{'number':contact.number,'status':'Not Available' });
-				}				
-			});
-	});
-
-	responseHttp.send('Hard alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime());// echo the result back});
+	if(req.params.statusType=='emergency'){
+		alertText='Fire detected at your home';
+	}
+	else if(req.params.statusType=='cancelled'){
+		alertText='Alert cancelled';
+	}
+	
+  	agent.createMessage()
+    .device(myToken)
+	.set('notificationType','newStatus')
+	.set('statusType',req.params.statusType)
+	.alert(alertText)
+//	.alert('action-loc-key','Action text')
+    .send(function (err) {
+	    if (err && err.toJSON) { res.json(400, { error: err.toJSON(false) }); } 
+		else if (err) { res.json(400, { error: err.message }); }
+		else {res.json({ success: true });}
+    });
 });
 
+
+app.get('test/newContact/:number/:place', function (req, res) {
+	
+	io.sockets.emit('newContact',{'number':req.params.number,'place':req.params.place  });
+	
+	var agent = app.get('apn');
+  	agent.createMessage()
+    .device(myToken)
+
+	.set('notificationType','newContact')
+	.set('number',req.params.number)
+	.set('place',req.params.place)
+	.alert('New responder signed up')
+//	.alert('action-loc-key','Action text')
+    .send(function (err) {
+	    if (err && err.toJSON) { res.json(400, { error: err.toJSON(false) }); } 
+		else if (err) { res.json(400, { error: err.message }); }
+		else {res.json({ success: true });}
+    });
+});
+
+
+app.get('test/updateFeedback/:number/:content', function (req, res) {
+	
+	io.sockets.emit('updateStatus',{'number':req.params.number,'status':req.params.content });
+	
+	var agent = app.get('apn');
+  	agent.createMessage()
+    .device(myToken)
+
+	.set('notificationType','updateFeedback')
+	.set('number',req.params.number)
+	.set('content',req.params.content)
+	.alert('New response from +'+req.params.number)
+//	.alert('action-loc-key','Action text')
+    .send(function (err) {
+	    if (err && err.toJSON) { res.json(400, { error: err.toJSON(false) }); } 
+		else if (err) { res.json(400, { error: err.message }); }
+		else {res.json({ success: true });}
+    });
+});
+
+app.get('test/newMessage/:number/:content', function (req, res) {
+	var agent = app.get('apn');
+  	agent.createMessage()
+    .device(myToken)
+
+	.set('notificationType','newMessage')
+	.set('number',req.params.number)
+	.set('content',req.params.content)
+	.alert('+'+req.params.number+': '+req.params.content)
+//	.alert('action-loc-key','Action text')
+    .send(function (err) {
+	    if (err && err.toJSON) { res.json(400, { error: err.toJSON(false) }); } 
+		else if (err) { res.json(400, { error: err.message }); }
+		else {res.json({ success: true });}
+    });
+});
+
+
+app.get('test/updateResponder/:number/:content', function (req, res) {
+	
+	
+	io.sockets.emit('updateResponder',{'number':req.params.number,'content':req.params.content });
+	res.send('number: '+req.params.number +'content: '+req.params.content );
+	
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//-------------
+//Call in stuff.
 
 
 app.post('/call', function(req, res) {
@@ -571,9 +685,6 @@ app.post('/incomingsms', function(req, res) {
 			io.sockets.emit('logthis',{'obj':req.body.From,'info':'Error sending' });
 	    }
 	});
-	io.sockets.emit('newContact',{'number':req.body.From,'zip':zip,'lang':lang  });
-
-	io.sockets.emit('logthis',{'obj':zip,'info':'Zip extracted'});
 
 	res.send('');
 });
