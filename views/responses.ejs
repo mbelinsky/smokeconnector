@@ -49,7 +49,7 @@
 				if(data.length>0){
 					console.log(data);
 					data.forEach(function(msg){
-						$('#home').append('<li id=n' + msg.number.replace("+","") + '> <p class="number">'+msg.number+' <span style="color:#aaa">'+msg.zip+', '+msg.state+'</span></p><p class="status">Ready</p></li>');
+						$('#home').append('<li id=n' + msg.number.replace("+","") + '> <p class="number">'+msg.number+' <span style="color:#aaa">'+msg.place+'</span></p><p class="status">Ready</p></li>');
 					});
 				}
 			}, "json");

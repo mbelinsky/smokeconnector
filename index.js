@@ -217,8 +217,12 @@ app.post('/newMessage', function(req, responseHttp) {
 });
 
 app.post('/addContact', function(req, responseHttp) {
+	
 	phoneContact.push({'number':req.body.number,'place':req.body.firstName+' '+req.body.lastName});	
+	io.sockets.emit('newContact',{'number':req.body.number,'place':req.body.firstName+' '+req.body.lastName });
+	
 	responseHttp.send('');
+	
 });
 
 app.get('/reset',function(request, responseHttp){
