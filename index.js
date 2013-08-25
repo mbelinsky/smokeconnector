@@ -8,10 +8,12 @@ app.use(express.static(__dirname + '/public'));
 
 var port = process.env.PORT || 80;
 var host = 'http://smokeconnector.nodejitsu.com';
+var voice_url = host+'/voice/';
 
-var responders = require('./data/responders').data;
+var twilioNumber = '+12406692679';//+14074776653'; 1 2406 MY CNRY
+var twilioNumberSmoke = '+14074776653';
 
-
+var phoneContact=[];
 
 var mongodb = require('mongodb');
              var db = new mongodb.Db('nodejitsu_justinlv_nodejitsudb3831052954',
@@ -24,39 +26,24 @@ var mongodb = require('mongodb');
                });
              });
 
-
-
 app.configure('development', function(){
 	port = 3000;
 	host='localhost';
 	console.log('development mode! '+host+':'+port);
 });
 
-var twilioNumber = '+12406692679';//+14074776653'; 1 2406 MY CNRY
-
-var twilioNumberSmoke = '+14074776653';
-
-var justinNumber = "+13476819080";
-var markNumber = "+13474669327";
 
 
-var voice_url = host+'/voice/';
+//var justinNumber = "+13476819080";
 
-var phoneNumbers=[];
-var phoneNumbers_es=[];
-var phoneContact=[];
+//phoneContact.push({'number':justinNumber,'language':'en','state':'CA','zip':'94122'});
 
-for(var i=0;i<1;i++){
-phoneContact.push({'number':justinNumber,'language':'en','state':'CA','zip':'94122'});
-}
 //var twilio = require('twilio');
 //var client = new twilio.RestClient('twilio')('ACeac2f16de43f1d54afc199dc5f7ae200', '8d7f041fe6dd708664d01d472a2ed904');
 
 var twilio = require('twilio');
 var client= new twilio.RestClient('ACeac2f16de43f1d54afc199dc5f7ae200', '8d7f041fe6dd708664d01d472a2ed904');
 
-var voiceMsg = 'Your smoke alarm has been set off. Notifications will be sent out to your selected contacts. Press 7 to cancel this alarm. Press 3 if you are not sure.';
-var smsMsg = '⊕ battery ♨ fire☀ air ⚠ monoxide ❁ pollen';
 
 app.set('view engine', 'ejs'); 
 app.set('view options', {
@@ -91,31 +78,11 @@ function getDateTime() {
 
 }
 
-/*
 
 
-Update status function:
-This is called whenever a change to someone's status is made. (Call answered, call ended, responded via SMS or phone input, subscribed)
-It sends out a socket message to update the status.
-
-Update response function:
-This is called additonally when a response is updated. This is used to trigger an update to active calles that are waiting for updates, or
-send SMS's to people that are subscribed.
-
-
-*/
-
-
-
-
-
-
-
-//Incoming call
-
+//Dial in information service
 
 app.post('/call', function(req, res) {
-	io.sockets.emit('newNumber',{'obj':req.body });
 	var resp = new twilio.TwimlResponse();
 	resp.play(host+'/final.mp3');
 	resp.gather({timeout:10,action:host+'/gathered',numDigits:1},function(){
@@ -126,15 +93,11 @@ app.post('/call', function(req, res) {
 		this.play(voice_url+'choose_af.mp3');
 		this.play(voice_url+'choose_canarynoise.mp3');
 	});
-	
 	res.type('text/xml');
 	res.send(resp.toString());
 });
 
-
-
 app.post('/gathered', function(req, res) {
-
 	var choice=req.body.Digits;
 	
 	if(choice==='*'){
@@ -142,12 +105,8 @@ app.post('/gathered', function(req, res) {
 		    url:host+'/call'
 		}, function(err, text) {});
 	}
-
 	var lang='en';
-	
 	var resp = new twilio.TwimlResponse();
-	
-	
 	switch(choice)
 	{
 	case '1':
@@ -176,10 +135,7 @@ app.post('/gathered', function(req, res) {
 	resp.gather( {timeout:30,action:host+'/gathered/2/'+lang,numDigits:1},function(){
 		this.play(voice_url+'updates_'+lang+'.mp3');
 		});
-	
-//	phoneContact.push({'number':req.body.From,'language':lang});
-//	io.sockets.emit('subscribed',{'number':req.body.From,'choice': choice});
-	
+
 	res.send(resp.toString());
 });
 
@@ -194,8 +150,6 @@ app.post('/gathered/2/:language', function(req, res) {
 	}
 	
 	var resp = new twilio.TwimlResponse();
-	
-	
 	switch(choice)
 	{
 	case '1': //Home
@@ -249,15 +203,10 @@ app.post('/gathered/2/:language', function(req, res) {
 		    url:host+'/call'
 		}, function(err, text) {});
 	}
-	
 	resp.gather( {timeout:30,action:host+'/gathered/3/'+lang,numDigits:1},function(){	
 		this.play(voice_url+'detailsback_'+lang+'.mp3');
 	});
-	
-		
 	res.send(resp.toString());
-	
-	
 	if(toMsg){
 		client.sms.messages.create({
 		    to:req.body.From,
@@ -273,29 +222,17 @@ app.post('/gathered/2/:language', function(req, res) {
 	}
 });
 
-
-
-
 app.post('/gathered/3/:language', function(req, res) {
-	
-	
 	if(req.body.Digits==='*'){
 		client.calls(req.body.CallSid).post({
 		    url:host+'/call'
 		}, function(err, text) {});
 	}
-	
 	var resp = new twilio.TwimlResponse();
 	resp.play(voice_url+'thanks.mp3'); 
 	resp.play(voice_url+'canary2.mp3'); 
 
 	res.send(resp.toString());
-	
-	
-	
-	/*	client.calls(req.body.CallSid).post({
-		    url:host+'/call'
-		}, function(err, text) {}); */
 
 	client.sms.messages.create({
 	    to:req.body.From,
@@ -303,48 +240,19 @@ app.post('/gathered/3/:language', function(req, res) {
 	    body:'Thank you for your call. For more information on how we plan on changing how New Yorkers view air quality data, visit canarydetector.com'
 	}, function(error, message) {});
 
-
-
-
 });
 //Twiml response
-
-
-
-
 
 //Used for updating status of each callee
 app.post('/call/ended', function(req,res){
 	//Call update status
-	io.sockets.emit('logthis',{'obj':req.body,'info':'Call ended' });
-	
 });
-
-
-app.post('/signupcall', function(req, res) {
-	io.sockets.emit('newNumber',{'obj':req.body });
-	io.sockets.emit('logthis',{'obj':req.body,'info':'New subscriber' });
-	
-	phoneContact.push({'number':req.body.From,'language':'en','state':req.body.CallerState,'zip':req.body.CallerZip});
-	
-	io.sockets.emit('newContact',{'number':req.body.From,'zip':req.body.CallerZip,'state':req.body.CallerState});
-	
-	var resp = new twilio.TwimlResponse();
-	resp.play(host+'/final.mp3');
-	resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +' as a responder to emergencies at Mark\'s residence,  If there is an emergency and Mark may be in danger, you will be contacted.')
-	res.type('text/xml');
-	res.send(resp.toString());
-});
-
-
 
 //Incoming SMS incomingsms
 app.post('/incomingsms', function(req, res) {
-	
 	var message=req.body.Body;
 	var zip = '10001';
 	var lang='en';
-	
 	if(message.match(/\d{5}/)){
 		zip = String(message.match(/\d{5}/));
 	}
@@ -365,10 +273,7 @@ app.post('/incomingsms', function(req, res) {
 		lang = 'es';
 		smsResp='Gracias por suscribirse al Canario. La calidad del aire en NYLS es Buena: 42. La calidad del aire en '+zip +' es OK: 54. La densidad polen es: Alta';
 	}
-	
-	
-	phoneContact.push({'number':req.body.From,'language':lang});
-
+//	phoneContact.push({'number':req.body.From,'language':lang});
 
 	client.sms.messages.create({
 	    to:req.body.From,
@@ -388,16 +293,6 @@ app.post('/incomingsms', function(req, res) {
 	
 	res.send('');
 });
-
-
-app.get('/reset',function(request, responseHttp){
-	phoneContact=[];
-	responseHttp.send('Subscribers: '+phoneContact.length);
-});
-
-
-
-
 
 //Socket testing
 
@@ -428,11 +323,11 @@ app.get('/testdata/:phone', function(req, res){
 		function(contact){
 			return(contact.number===req.params.phone);
 		});
-		if (data.length>0){
-			res.send(data[0].language);
-		} else {
-			res.status(404).send('Number doesn\'t exist')
-		}
+	if (data.length>0){
+		res.send(data[0].language);
+	} else {
+		res.status(404).send('Number doesn\'t exist')
+	}
 });
 
 app.get('/test/:mytext/:number', function(req, res){
@@ -453,30 +348,162 @@ app.post('/newContact', function(req,res){
 	console.log('Received: ' + req.body.number+' zip:'+req.body.zip+' state:'+req.body.state);
 });
 
+
+
+
+//Real shit starts here. This is for the NYTM demo with the iPhone app.
+
+
+//Posts from Twilio
+
+app.post('/signupcall', function(req, res) {
+	
+	if(phoneContact.length<5){
+				
+	}
+	
+	io.sockets.emit('newNumber',{'obj':req.body });	
+	phoneContact.push({'number':req.body.From,'language':'en','state':req.body.CallerState,'zip':req.body.CallerZip});
+	
+	io.sockets.emit('newContact',{'number':req.body.From,'zip':req.body.CallerZip,'state':req.body.CallerState});
+	
+	var resp = new twilio.TwimlResponse();
+	resp.play(host+'/final.mp3');
+	resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +' as a responder to emergencies at Mark\'s residence,  If there is an emergency and Mark may be in danger, you will be contacted.')
+	res.type('text/xml');
+	res.send(resp.toString());
+});
+
+app.post('/newsms', function(req, res) {
+	var message=req.body.Body;
+	var number=req.body.From;
+	
+	var data = phoneContact.filter(
+		function(contact){
+			return(contact.number===number);
+		});
+	if (data.length>0){
+		//Send message via APNS to app
+		
+		//If Contact has firstName, relay to all contacts
+	} else {
+		//Send thank you message back, and don't do anything else.
+	}
+
+	client.sms.messages.create({
+	    to:number,
+	    from:twilioNumber,
+	    body:'Thanks for signing up to alerts from Justin\'s residence'
+	}, function(error, message) {
+	    if (!error) {}
+	    else {}
+	});	
+	res.send('');
+});
+
+
+
+
+//Posts from App
+
+app.post('/settoken', function(req, responseHttp) {
+//	req.body.token
+	console.log('Token received is: '+req.body.token);
+	responseHttp.send('');
+});
+
+app.post('/newMessage', function(req, responseHttp) {
+//	req.body.token
+	console.log('New message from '+req.body.number+': '+req.body.content);
+	
+//Relay message to all responders	
+	phoneContact.forEach(function(contact)
+	{
+		client.sms.messages.create({
+		    to:number,
+		    from:twilioNumber,
+		    body:contact.firstName+': '+req.body.content
+		}, function(error, message) {
+		    if (!error) {}
+		    else {}
+		});	
+	}
+	responseHttp.send('');
+});
+
+app.post('/addContact', function(req, responseHttp) {
+//	req.body.token
+	console.log('New contact: '+req.body.firstName+' '+req.body.lastName+': '+req.body.number);
+	responseHttp.send('');
+});
+
+app.get('/reset',function(request, responseHttp){
+	phoneContact=[];
+});
+
+app.post('/thank', function(req, responseHttp) {
+	client.sms.messages.create({
+	    to:req.body.Called,
+	    from:twilioNumberSmoke,
+	    body:'Thanks for viewing our test demo, we hope you liked the Birdi smart smoke detector. There are great things to come. To learn more, check out birdi.co'
+	}, function(error, message) {});
+});
+
+
+
+
+
+
+
+//Posts from device
+
+app.get('/reset',function(request, responseHttp){
+	phoneContact=[];
+	responseHttp.send('Subscribers: '+phoneContact.length);
+});
+
+app.get('/alert',function(request, responseHttp){
+
+	console.log(request.body);
+	io.sockets.emit('hardAlert', { 'time':getDateTime() });
+
+	//Send APN
+	
+	phoneContact.forEach(function(contact)
+	{
+		client.calls.create({
+		    url: host+'/call/new',
+			status_callback: host+'/call/ended', //Notifies about ended call
+		    to: contact.number,
+		    from: twilioNumberSmoke,
+		}, function(err, call) {
+			if (!err) { // "err" is an error received during the request, if any
+		        console.log(call);
+				io.sockets.emit('updateResponder',{'number':contact.number,'status':'Calling' });
+				}
+			else{
+				io.sockets.emit('updateResponder',{'number':contact.number,'status':'Not Available' });
+				//Send text message
+			}				
+			});
+	});
+	responseHttp.send('Hard alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime());// echo the result back});
+});
+
 //Call out in response to real alert
 app.post('/call/new', function(req, res) {
 	var resp = new twilio.TwimlResponse();
-	
 	io.sockets.emit('logthis',{'obj':req.body,'info':'New call initiated' });
-	
 	var lang='en';
 //	Called
 //	CallSid
 	
-	var data = phoneContact.filter(
-		function(contact){
-			return(contact.number===req.body.Called);
-		});
-		if (data.length>0){
-			lang=data[0].language;
-		}
-	
 	resp.gather({timeout:60,action:host+'/response/1',numDigits:1},function(){
-		this.say({voice:'woman', language:lang},'Mark\'s Canary has reported a fire alarm. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
+		this.say({voice:'woman', language:lang},'Justin\'s birdy has reported a fire alarm. Press 9 if this is an emergency. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. ')
 		.pause({ length:3 })
-		.say({voice:'woman', language:lang},'Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
+		.say({voice:'woman', language:lang},'Press 9 if this is an emergency. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. ')
 		.pause({ length:3 })
-		.say({voice:'woman', language:lang},'Mark\'s Canary has reported a fire alarm. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. Press 9 if this is an emergency.')
+		.say({voice:'woman', language:lang},'Justin\'s birdy has reported a fire alarm. Press 9 if this is an emergency. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. ')
 		.pause({ length:3 })
 	});
 	
@@ -520,17 +547,19 @@ app.post('/response/1', function(req, res) {
 			resp.say({voice:'woman'},'Obviously you were listening to our presentation and not what number you were suppose to press.');
 	}
 	
-	client.sms.messages.create({
-	    to:req.body.Called,
-	    from:twilioNumberSmoke,
-	    body:'Thanks for trying our test demo, we hope you liked the Canary smart smoke detector. There are great things to come. To learn more, check out canarydetector.com'//smokeconnector.nodejitsu.com/eventData
-	}, function(error, message) {});
-	
 	res.type('text/xml');
 	res.send(resp.toString());
 	
-	
 });
+
+app.get('/responderslist', function(req, res){
+	console.log(req.url);
+	res.send(phoneContact);
+});
+
+
+
+
 
 //Trigger real alert
 app.get('/alert',function(request, responseHttp){
@@ -560,35 +589,18 @@ app.get('/alert',function(request, responseHttp){
 	responseHttp.send('Hard alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime());// echo the result back});
 });
 
-app.get('/status', function(req, res){
-	console.log(req.url);
-	res.render('status', {
-		server : host+':'+port
-	});
-});
+
+
+
+
+
+
+
 
 app.get('/', function(req, res){
 	console.log(req.url);
 	
 	res.render('dash', {
-		server : host+':'+port
-	});
-});
-
-
-
-app.get('/responderslist', function(req, res){
-	console.log(req.url);
-	
-	
-	res.send(phoneContact);
-
-});
-
-app.get('/eventData', function(req, res){
-	console.log(req.url);
-	
-	res.render('graph', {
 		server : host+':'+port
 	});
 });
