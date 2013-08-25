@@ -256,6 +256,23 @@ app.get('/alert',function(request, responseHttp){
 
 	//Send APN
 	
+		var agent = app.get('apn');
+		var alertText ='Fire detected at your home';
+
+
+
+	  	agent.createMessage()
+	    .device(myToken)
+		.set('notificationType','newStatus')
+		.set('statusType','emergency')
+		.alert(alertText)
+	//	.alert('action-loc-key','Action text')
+	    .send(function (err) {
+		    if (err && err.toJSON) {  } 
+			else if (err) { }
+			else {}
+	    });
+	
 	phoneContact.forEach(function(contact)
 	{
 		client.calls.create({
@@ -371,7 +388,7 @@ app.get('/responderslist', function(req, res){
 //APNS tests
 
 
-app.get('test/newStatus/:statusType', function (req, res) {
+app.get('/test/newStatus/:statusType', function (req, res) {
 	var agent = app.get('apn');
 	var alertText ='Updated status';
 	
@@ -396,9 +413,9 @@ app.get('test/newStatus/:statusType', function (req, res) {
 });
 
 
-app.get('test/newContact/:number/:place', function (req, res) {
+app.get('/test/newContact/:number/:place', function (req, res) {
 	
-	io.sockets.emit('newContact',{'number':req.params.number,'place':req.params.place  });
+	io.sockets.emit('newContact',{'number':req.params.number,'place':req.params.place });
 	
 	var agent = app.get('apn');
   	agent.createMessage()
@@ -407,7 +424,7 @@ app.get('test/newContact/:number/:place', function (req, res) {
 	.set('notificationType','newContact')
 	.set('number',req.params.number)
 	.set('place',req.params.place)
-	.alert('New responder signed up')
+	.alert('+'+req.params.number+ ' signed up from '+req.params.place)
 //	.alert('action-loc-key','Action text')
     .send(function (err) {
 	    if (err && err.toJSON) { res.json(400, { error: err.toJSON(false) }); } 
@@ -417,7 +434,7 @@ app.get('test/newContact/:number/:place', function (req, res) {
 });
 
 
-app.get('test/updateFeedback/:number/:content', function (req, res) {
+app.get('/test/updateFeedback/:number/:content', function (req, res) {
 	
 	io.sockets.emit('updateStatus',{'number':req.params.number,'status':req.params.content });
 	
@@ -437,7 +454,7 @@ app.get('test/updateFeedback/:number/:content', function (req, res) {
     });
 });
 
-app.get('test/newMessage/:number/:content', function (req, res) {
+app.get('/test/newMessage/:number/:content', function (req, res) {
 	var agent = app.get('apn');
   	agent.createMessage()
     .device(myToken)
@@ -455,7 +472,7 @@ app.get('test/newMessage/:number/:content', function (req, res) {
 });
 
 
-app.get('test/updateResponder/:number/:content', function (req, res) {
+app.get('/test/updateResponder/:number/:content', function (req, res) {
 	
 	
 	io.sockets.emit('updateResponder',{'number':req.params.number,'content':req.params.content });
