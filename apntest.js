@@ -40,7 +40,7 @@ app.configure('development', 'test', function () {
   agent 
     .set('cert file', join(__dirname, '_certs/apnagent-dev-cert.pem'))
     .set('key file', join(__dirname, '_certs/apnagent-dev-key.pem'))
-	.set('passphrase', 'sealteam')
+	.set('passphrase', '')
     .enable('sandbox');
 
   // mount to app
