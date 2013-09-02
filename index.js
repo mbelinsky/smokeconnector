@@ -81,7 +81,7 @@ app.configure('localdevelopment', function(){
 });
 
 app.configure('development', function(){
-	port = 80;
+	port = 8080;
 	host='ec2-54-213-213-231.us-west-2.compute.amazonaws.com';
 	console.log('AWS mode! '+host+':'+port);
 });
