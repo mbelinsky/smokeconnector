@@ -67,6 +67,9 @@
 		socket.on('newContact', function (msg) {
 			$('#mark').append('<li id=' + msg.number.replace("+","") + '><a href="index.html"> <img src="../thumbs/mark.png"> <h3>'+msg.number+'</h3><p>Friend</p> <a href="">Call</a>');			
 			})
+			.on('newToken', function (msg) {
+				console.log(msg.token);
+			})
 		.on('update', function (msg) {
 				$('#'+msg.number.replace('+','')).p.append(msg.status);
 		});

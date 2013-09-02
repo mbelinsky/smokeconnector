@@ -73,6 +73,7 @@ var mongodb = require('mongodb');
                });
              });
 
+
 app.configure('development', function(){
 	port = 3000;
 	host='localhost';
@@ -91,22 +92,7 @@ app.set('view options', {
 
 
 
-app.get('/newContact/:number/:place', function (req, res) {
-	var agent = app.get('apn');
-  	agent.createMessage()
-    .device(myToken)
 
-	.set('notificationType','newContact')
-	.set('number',req.params.number)
-	.set('place',req.params.place)
-	.alert('New responder signed up')
-//	.alert('action-loc-key','Action text')
-    .send(function (err) {
-	    if (err && err.toJSON) { res.json(400, { error: err.toJSON(false) }); } 
-		else if (err) { res.json(400, { error: err.message }); }
-		else {res.json({ success: true });}
-    });
-});
 
 //Real shit starts here. This is for the NYTM demo with the iPhone app.
 
@@ -128,10 +114,10 @@ app.post('/signupcall', function(req, res) {
 	  	agent.createMessage()
 	    .device(myToken)
 
-		.set('notificationType','newContact')
+		.set('notificationType','newSignup')
 		.set('number',formattedNumber)
 		.set('place',place)
-		.alert('+'+formattedNumber+' signed up')
+		.alert('+'+formattedNumber+' signed up from '+place)
 	//	.alert('action-loc-key','Action text')
 	    .send(function (err) {
 		    if (err && err.toJSON) {  } 
@@ -140,7 +126,7 @@ app.post('/signupcall', function(req, res) {
 	    });
 		io.sockets.emit('newContact',{'number':formattedNumber,'place':place});
 	
-		phoneContact.push({'number':formattedNumber,'place':place});
+		phoneContact.push({'number':formattedNumber,'firstName':'NYTM audience','lastName':place});
 		
 		resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +' as a responder to emergencies at Justin\'s residence,  If there is an emergency and Justin may be in danger, you will be contacted.');
 	}
@@ -148,6 +134,19 @@ app.post('/signupcall', function(req, res) {
 		resp.say({voice:'woman', language:'en'},'Hi there. As there are already 10 responders, you will be notified of updates by text message');
 		thankOnly.push(req.body.From);
 	}
+	
+	res.type('text/xml');
+	res.send(resp.toString());
+});
+
+app.get('/twimleg', function(req, res) {
+	
+	var resp = new twilio.TwimlResponse();
+	resp.play(host+'/final.mp3');
+	
+		
+	resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from New York as a responder to emergencies at Justin\'s residence,  If there is an emergency and Justin may be in danger, you will be contacted.');
+
 	
 	res.type('text/xml');
 	res.send(resp.toString());
@@ -161,15 +160,12 @@ app.post('/newsms', function(req, res) {
 	var toSend='';
 	
 	//Filter number to remove +'s etc.
-	
 	var data = phoneContact.filter(function(contact){return(contact.number===number);});
-	
 	if (data.length>0){
 		//Send message via APNS to app, with data.number and data
 			var agent = app.get('apn');
 		  	agent.createMessage()
 		    .device(myToken)
-
 			.set('notificationType','newMessage')
 			.set('number',number)
 			.set('content',message)
@@ -193,16 +189,19 @@ app.post('/newsms', function(req, res) {
 
 app.post('/settoken', function(req, responseHttp) {
 //	req.body.token
-	myToken=req.body.token;
-	console.log('Token received is: '+req.body.token);
+	myToken=req.body.token.replace('<','').replace('>','');
+	io.sockets.emit('newToken',{'token':myToken });
+	console.log('Token received is: '+req.body.token+' and edited is '+ myToken);
 	responseHttp.send('');
 });
 
-app.post('/newMessage', function(req, responseHttp) {
-	console.log('New message from '+req.body.number+': '+req.body.content);
+
+app.post('/newmessage', function(req, responseHttp) {
+	console.log('New message from app: '+req.body.content);
 //Relay message to all responders	
 	phoneContact.forEach(function(contact)
 	{
+		console.log('Sending ""'+req.body.content   +'"" to: '+number);
 		client.sms.messages.create({
 		    to:number,
 		    from:twilioNumber,
@@ -216,10 +215,11 @@ app.post('/newMessage', function(req, responseHttp) {
 	responseHttp.send('');
 });
 
-app.post('/addContact', function(req, responseHttp) {
+app.post('/addcontact', function(req, responseHttp) {
 	
-	phoneContact.push({'number':req.body.number,'place':req.body.firstName+' '+req.body.lastName});	
-	io.sockets.emit('newContact',{'number':req.body.number,'place':req.body.firstName+' '+req.body.lastName });
+	phoneContact.push({'number':req.body.number,'firstName':req.body.firstName, 'lastName' :req.body.lastName});	
+	
+	io.sockets.emit('newContact',{'number':req.body.number,'firstName':req.body.firstName, 'lastName':req.body.lastName });
 	
 	responseHttp.send('');
 	
@@ -227,9 +227,10 @@ app.post('/addContact', function(req, responseHttp) {
 
 app.get('/reset',function(request, responseHttp){
 	phoneContact=[];
+	responseHttp.send('');
 });
 
-app.post('/thank', function(req, responseHttp) {
+app.get('/thank', function(req, responseHttp) {
 	thankOnly.forEach(function(tosms)
 	{
 		client.sms.messages.create({
@@ -238,6 +239,7 @@ app.post('/thank', function(req, responseHttp) {
 		    body:'Thanks for viewing our test demo, we hope you liked the Birdi smart smoke detector. There are great things to come. To learn more, check out birdi.co'
 		}, function(error, message) {});
 	});
+	responseHttp.send('');
 });
 
 
@@ -255,7 +257,6 @@ app.get('/reset',function(request, responseHttp){
 
 app.get('/alert',function(request, responseHttp){
 
-	console.log(request.body);
 	io.sockets.emit('alert', { 'time':getDateTime() });
 
 	//Send APN
@@ -269,6 +270,7 @@ app.get('/alert',function(request, responseHttp){
 	    .device(myToken)
 		.set('notificationType','newStatus')
 		.set('statusType','emergency')
+		.set('time',getDateTime())
 		.alert(alertText)
 	//	.alert('action-loc-key','Action text')
 	    .send(function (err) {
@@ -287,12 +289,12 @@ app.get('/alert',function(request, responseHttp){
 		}, function(err, call) {
 			if (!err) { // "err" is an error received during the request, if any
 		        console.log(call);
-				io.sockets.emit('updateStatus',{'number':contact.number,'status':'Calling' }); //mobile
+				io.sockets.emit('updateFeedback',{'number':contact.number,'status':'Calling' }); //mobile
 				io.sockets.emit('updateResponder',{'number':contact.number,'status':'Calling' }); //iOS
 				
 				}
 			else{
-				io.sockets.emit('updateStatus',{'number':contact.number,'status':'Not Available' }); //mobile
+				io.sockets.emit('updateFeedback',{'number':contact.number,'status':'Not Available' }); //mobile
 				io.sockets.emit('updateResponder',{'number':contact.number,'status':'Not Available' }); //iOS
 				//Send text message
 			}				
@@ -331,7 +333,7 @@ app.post('/response/1', function(req, res) {
 	switch(choice)
 	{
 		case 1:
-			io.sockets.emit('updateStatus',{'number':number,'status':'false' });
+			io.sockets.emit('updateFeedback',{'number':number,'status':'false' });
 			// Assign false to DB entry with this number.
 			// Call updated response function
 			status='false';
@@ -340,14 +342,14 @@ app.post('/response/1', function(req, res) {
 			resp.say({voice:'woman'},'Phew! That was a close one. The rest of your household will be notified that this was just a false alarm.');
 			break;
 		case 3:
-			io.sockets.emit('updateStatus',{'number':number,'status':'uncertain' });
+			io.sockets.emit('updateFeedback',{'number':number,'status':'uncertain' });
 			status='notsure';
 			// Assign unsure to DB entry with this number
 			// Call updated response function			
 			resp.say({voice:'woman'},'Keep calm. The smoke detector has gone off. We\'re contacting your housemates to see what happened.');
 			break;
 		case 9:
-			io.sockets.emit('updateStatus',{'number':number,'status':'emergency' });
+			io.sockets.emit('updateFeedback',{'number':number,'status':'emergency' });
 			status='emergency';
 			report='an emergency';
 			
@@ -356,7 +358,7 @@ app.post('/response/1', function(req, res) {
 			resp.say({voice:'woman'},'Stay calm. We\'re alerting your housemates. Please call 9 1 1 immediately. To change your response, press 7. Otherwise, please hang up and dial 9 1 1.');
 			break;
 		default:
-			io.sockets.emit('updateStatus',{'number':number,'status':'uncertain' });
+			io.sockets.emit('updateFeedback',{'number':number,'status':'uncertain' });
 			resp.say({voice:'woman'},'Obviously you were listening to our presentation and not what number you were suppose to press.');
 	}
 	
@@ -406,6 +408,7 @@ app.get('/test/newStatus/:statusType', function (req, res) {
   	agent.createMessage()
     .device(myToken)
 	.set('notificationType','newStatus')
+	.set('time',getDateTime())
 	.set('statusType',req.params.statusType)
 	.alert(alertText)
 //	.alert('action-loc-key','Action text')
@@ -417,7 +420,7 @@ app.get('/test/newStatus/:statusType', function (req, res) {
 });
 
 
-app.get('/test/newContact/:number/:place', function (req, res) {
+app.get('/test/newSignup/:number/:place', function (req, res) {
 	
 	io.sockets.emit('newContact',{'number':req.params.number,'place':req.params.place });
 	
@@ -425,7 +428,7 @@ app.get('/test/newContact/:number/:place', function (req, res) {
   	agent.createMessage()
     .device(myToken)
 
-	.set('notificationType','newContact')
+	.set('notificationType','newSignup')
 	.set('number',req.params.number)
 	.set('place',req.params.place)
 	.alert('+'+req.params.number+ ' signed up from '+req.params.place)
@@ -440,12 +443,10 @@ app.get('/test/newContact/:number/:place', function (req, res) {
 
 app.get('/test/updateFeedback/:number/:content', function (req, res) {
 	
-	io.sockets.emit('updateStatus',{'number':req.params.number,'status':req.params.content });
-	
+	io.sockets.emit('updateFeedback',{'number':req.params.number,'status':req.params.content });
 	var agent = app.get('apn');
   	agent.createMessage()
     .device(myToken)
-
 	.set('notificationType','updateFeedback')
 	.set('number',req.params.number)
 	.set('content',req.params.content)
@@ -476,18 +477,29 @@ app.get('/test/newMessage/:number/:content', function (req, res) {
 });
 
 
-app.get('/test/updateResponder/:number/:content', function (req, res) {
-	
-	
-	io.sockets.emit('updateResponder',{'number':req.params.number,'content':req.params.content });
-	res.send('number: '+req.params.number +'content: '+req.params.content );
-	
+
+
+app.get('/test/alert', function (req, res) {
+
+	io.sockets.emit('alert', { 'time':getDateTime() });
+
+//Send APN
+	var agent = app.get('apn');
+	var alertText ='Fire detected at your home';
+  	agent.createMessage()
+    .device(myToken)
+	.set('notificationType','newStatus')
+	.set('statusType','emergency')
+	.set('time',getDateTime())
+	.alert(alertText)
+//	.alert('action-loc-key','Action text')
+    .send(function (err) {
+	    if (err && err.toJSON) {  } 
+		else if (err) { }
+		else {}
+    });
+	res.send('');
 });
-
-
-
-
-
 
 
 

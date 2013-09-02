@@ -29,7 +29,7 @@
 		
 		
 		
-		 <a id='resetbutton' href="http://smokeconnector.nodejitsu.com/reset" target="_blank">Reset all</a>
+		 <a id='resetbutton' href="" onclick="resetResponders()"  target="_blank">Reset all</a>
 		
 		
 		
@@ -49,12 +49,16 @@
 				if(data.length>0){
 					console.log(data);
 					data.forEach(function(msg){
-						$('#home').append('<li id=n' + msg.number.replace("+","") + '> <p class="number">'+msg.number+' <span style="color:#aaa">'+msg.place+'</span></p><p class="status">Ready</p></li>');
+						$('#home').append('<li id=n' + msg.number.replace("+","") + '> <p class="number">'+msg.number+' <span style="color:#aaa">'+msg.firstName+', '+msg.lastName+'</span></p><p class="status">Ready</p></li>');
 					});
 				}
 			}, "json");
 		});
 		
+		function resetResponders(){
+			$.get('reset',function(data){});
+			console.log("Resetting");
+		}
 		
 		function capitaliseFirstLetter(string)
 		{
@@ -65,14 +69,14 @@
 		var socket = io.connect('<%=server%>');
 		socket.on('connect', function () {
 			socket.on('newContact', function (msg) {
-				$('#home').append('<li id=n' + msg.number.replace("+","").replace('(','').replace(')','').replace(' ','') + '> <p class="number">'+msg.number+' <span style="color:#aaa">'+msg.place+'</span></p><p class="status">Ready</p></li>');			
+				$('#home').append('<li id=n' + msg.number.replace("+","").replace('(','').replace(')','').replace(' ','') + '> <p class="number">'+msg.number+' <span style="color:#aaa">'+msg.firstName+', '+msg.lastName+'</span></p><p class="status">Ready</p></li>');			
 				})
 				.on('alert',function(msg){
 					$('#header').removeClass().addClass('headerAlarm');
 					$('#bottom').show();
 					$('#firedetected').html("Fire detected at "+msg.time+'!');
 				})
-			.on('updateStatus', function (msg) {
+			.on('updateFeedback', function (msg) {
 					var contact=$('#n'+msg.number.replace('+','').replace('(','').replace(')','').replace(' ','') );
 					contact.children('p.status').html(capitaliseFirstLetter(msg.status));
 					if(msg.status==='emergency'){
