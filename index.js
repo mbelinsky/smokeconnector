@@ -74,13 +74,13 @@ var mongodb = require('mongodb');
              });
 
 
-app.configure('development', function(){
+app.configure('localdevelopment', function(){
 	port = 80;
 	host='localhost';
 	console.log('development mode! '+host+':'+port);
 });
 
-app.configure('aws_production', function(){
+app.configure('development', function(){
 	port = 80;
 	host='ec2-54-213-213-231.us-west-2.compute.amazonaws.com';
 	console.log('AWS mode! '+host+':'+port);
