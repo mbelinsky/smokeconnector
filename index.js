@@ -124,7 +124,7 @@ app.post('/signupcall', function(req, res) {
 			else if (err) { }
 			else {}
 	    });
-		io.sockets.emit('newContact',{'number':formattedNumber,'place':place});
+		io.sockets.emit('newContact',{'number':formattedNumber,'firstName':'NYTM audience', 'lastName':place});
 	
 		phoneContact.push({'number':formattedNumber,'firstName':'NYTM audience','lastName':place});
 		
@@ -139,18 +139,6 @@ app.post('/signupcall', function(req, res) {
 	res.send(resp.toString());
 });
 
-app.get('/twimleg', function(req, res) {
-	
-	var resp = new twilio.TwimlResponse();
-	resp.play(host+'/final.mp3');
-	
-		
-	resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from New York as a responder to emergencies at Justin\'s residence,  If there is an emergency and Justin may be in danger, you will be contacted.');
-
-	
-	res.type('text/xml');
-	res.send(resp.toString());
-});
 
 
 app.post('/newsms', function(req, res) {
@@ -422,7 +410,7 @@ app.get('/test/newStatus/:statusType', function (req, res) {
 
 app.get('/test/newSignup/:number/:place', function (req, res) {
 	
-	io.sockets.emit('newContact',{'number':req.params.number,'place':req.params.place });
+	io.sockets.emit('newContact',{'number':req.params.number,'firstName':'NYTM audience', 'lastName':req.params.place });
 	
 	var agent = app.get('apn');
   	agent.createMessage()
