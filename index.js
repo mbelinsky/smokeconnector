@@ -111,6 +111,9 @@ app.post('/signupcall', function(req, res) {
 	resp.play(host+'/final.mp3');
 	var formattedNumber=req.body.From.replace('+','').replace('(','').replace(')','').replace(' ','').replace('-','');
 	
+	
+	var firstName='Phone signup';
+	
 	if(phoneContact.length<11){
 		
 		var place=req.body.CallerZip+', ' +req.body.CallerState;
@@ -130,9 +133,9 @@ app.post('/signupcall', function(req, res) {
 			else if (err) { }
 			else {}
 	    });
-		io.sockets.emit('newContact',{'number':formattedNumber,'firstName':'NYTM audience', 'lastName':place});
+		io.sockets.emit('newContact',{'number':formattedNumber,'firstName':firstName, 'lastName':place});
 	
-		phoneContact.push({'number':formattedNumber,'firstName':'NYTM audience','lastName':place});
+		phoneContact.push({'number':formattedNumber,'firstName':firstName,'lastName':place});
 		
 		resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +' as a responder to emergencies at Justin\'s residence,  If there is an emergency and Justin may be in danger, you will be contacted.');
 	}
@@ -437,7 +440,7 @@ app.get('/test/newSignup/:number/:place', function (req, res) {
 
 app.get('/test/updateFeedback/:number/:content', function (req, res) {
 	
-	io.sockets.emit('updateFeedback',{'number':req.params.number,'status':req.params.content });
+//	io.sockets.emit('updateFeedback',{'number':req.params.number,'status':req.params.content });
 	var agent = app.get('apn');
   	agent.createMessage()
     .device(myToken)
