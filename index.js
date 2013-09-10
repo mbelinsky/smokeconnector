@@ -114,6 +114,8 @@ app.post('/signupcall', function(req, res) {
 	
 	var firstName='Phone signup';
 	
+	
+	//TODO: Check if exists
 	if(phoneContact.length<11){
 		
 		var place=req.body.CallerZip+', ' +req.body.CallerState;
@@ -137,7 +139,7 @@ app.post('/signupcall', function(req, res) {
 	
 		phoneContact.push({'number':formattedNumber,'firstName':firstName,'lastName':place});
 		
-		resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +' as a responder to emergencies at Justin\'s residence,  If there is an emergency and Justin may be in danger, you will be contacted.');
+		resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +' as a responder to emergencies at Mark\'s residence,  If there is an emergency and Mark may be in danger, you will be contacted.');
 	}
 	else{
 		resp.say({voice:'woman', language:'en'},'Hi there. As there are already 10 responders, you will be notified of updates by text message');
@@ -145,7 +147,7 @@ app.post('/signupcall', function(req, res) {
 	}
 	
 	res.type('text/xml');
-	res.send(resp.toString());
+	res.send(200, resp.toString());
 });
 
 
@@ -178,8 +180,24 @@ app.post('/newsms', function(req, res) {
 		//Send thank you message back (or not), and don't do anything else.
 	}
 
-	res.send('');
+	res.send(200);
 });
+
+app.get('/twilioTest', function(req, res) {
+	
+	var resp = new twilio.TwimlResponse();
+	resp.play(host+'/final.mp3');
+	
+	
+	var firstName='Phone signup';
+
+	resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from xxxx as a responder to emergencies at Justin\'s residence,  If there is an emergency and Justin may be in danger, you will be contacted.');
+	
+	res.type('text/xml');
+	res.send(resp.toString());
+});
+
+
 
 
 //Posts from App
@@ -300,7 +318,15 @@ app.get('/alert',function(request, responseHttp){
 	responseHttp.send('Hard alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime());// echo the result back});
 });
 
-//Call out in response to real alert
+
+
+
+
+
+
+
+//Responses from Twilio in the phonecall
+
 app.post('/call/new', function(req, res) {
 	var resp = new twilio.TwimlResponse();
 	var lang='en';
@@ -316,7 +342,7 @@ app.post('/call/new', function(req, res) {
 		.pause({ length:3 })
 	});
 	res.type('text/xml');
-	res.send(resp.toString());
+	res.send(200, resp.toString());
 });
 
 app.post('/response/1', function(req, res) {
@@ -375,7 +401,7 @@ app.post('/response/1', function(req, res) {
 	    });
 	
 	res.type('text/xml');
-	res.send(resp.toString());
+	res.send(200, resp.toString());
 	
 });
 
