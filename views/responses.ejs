@@ -83,6 +83,7 @@
 				.on('alert',function(msg){
 					$('#header').removeClass().addClass('headerAlarm');
 					$('#bottom').show();
+					$('#triggerbutton').hide();
 					$('#firedetected').html("Fire detected at "+msg.time+'!');
 				})
 			.on('updateFeedback', function (msg) {
