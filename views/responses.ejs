@@ -29,7 +29,10 @@
 		
 		
 		
-		 <a id='resetbutton' href="" onclick="resetResponders()"  target="_blank">Reset all</a>
+		 <a id='resetbutton'  onclick="resetResponders()" >Reset all</a>
+		
+		 <a id='triggerbutton'  onclick="trigger()" >Trigger</a>
+		
 		
 		
 		
@@ -58,6 +61,12 @@
 		function resetResponders(){
 			$.get('reset',function(data){});
 			console.log("Resetting");
+		}
+		
+		function trigger(){
+			$.get('alert',function(data){});
+			console.log("Triggered alert");
+			$('#triggerbutton').hide();
 		}
 		
 		function capitaliseFirstLetter(string)

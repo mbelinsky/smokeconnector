@@ -125,6 +125,20 @@ background: -webkit-linear-gradient(top, rgb(213, 60, 0), rgb(247, 87, 46));
 	
 }
 
+#triggerbutton{
+	text-align: center;
+	display: inline-block;
+	background-color: #181818;
+	border-radius: 5px;
+	border-color: rgba(255,255,255,.3);
+	padding: 12px 18px;
+	position:fixed;
+	bottom:10px;
+	left:10px;
+	z-index:3;
+	
+}
+
 
 
 p.status{
