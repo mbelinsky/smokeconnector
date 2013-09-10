@@ -11,7 +11,7 @@ app.use(express.static(__dirname + '/public'));
 
 
 var port = process.env.PORT || 80;
-var host = 'http://smokeconnector.nodejitsu.com';
+host='http://54.213.213.231';
 var voice_url = host+'/voice/';
 
 
@@ -82,7 +82,7 @@ app.configure('localdevelopment', function(){
 
 app.configure('development', function(){
 	port = 8080;
-	host='ec2-54-213-213-231.us-west-2.compute.amazonaws.com';
+	host='http://54.213.213.231';
 	console.log('AWS mode! '+host+':'+port);
 });
 
@@ -108,11 +108,14 @@ app.set('view options', {
 app.post('/signupcall', function(req, res) {
 	
 	var resp = new twilio.TwimlResponse();
-	resp.play(host+'/final.mp3');
+	resp.play('/final.mp3');
 	var formattedNumber=req.body.From.replace('+','').replace('(','').replace(')','').replace(' ','').replace('-','');
 	
 	
 	var firstName='Phone signup';
+	if(req.body.CallerName.length>0){
+		firstName=req.body.CallerName;
+	}
 	
 	
 	//TODO: Check if exists
