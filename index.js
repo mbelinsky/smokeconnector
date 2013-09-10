@@ -4,7 +4,7 @@ var express = require('express')
   , join = require('path').join
   , http = require('http')
   , server = http.createServer(app)
-  , io = require('socket.io').listen(server);
+  , io = require('socket.io').listen(server, { log: false });
 app.use(express.bodyParser());
 app.use(express.static(__dirname + '/public'));
 
@@ -209,7 +209,7 @@ app.post('/settoken', function(req, responseHttp) {
 //	req.body.token
 	myToken=req.body.token.replace('<','').replace('>','');
 	io.sockets.emit('newToken',{'token':myToken });
-	console.log('Token received is: '+req.body.token+' and edited is '+ myToken);
+	console.log('Assigned token:'+ myToken);
 	responseHttp.send('');
 });
 
@@ -278,24 +278,21 @@ app.get('/alert',function(request, responseHttp){
 	io.sockets.emit('alert', { 'time':getDateTime() });
 
 	//Send APN
-	
-		var agent = app.get('apn');
-		var alertText ='Fire detected at your home';
+	var agent = app.get('apn');
+	var alertText ='Fire detected at your home';
 
-
-
-	  	agent.createMessage()
-	    .device(myToken)
-		.set('notificationType','newStatus')
-		.set('statusType','emergency')
-		.set('time',getDateTime())
-		.alert(alertText)
-	//	.alert('action-loc-key','Action text')
-	    .send(function (err) {
-		    if (err && err.toJSON) {  } 
-			else if (err) { }
-			else {}
-	    });
+  	agent.createMessage()
+    .device(myToken)
+	.set('notificationType','newStatus')
+	.set('statusType','emergency')
+	.set('time',getDateTime())
+	.alert(alertText)
+//	.alert('action-loc-key','Action text')
+    .send(function (err) {
+	    if (err && err.toJSON) {  } 
+		else if (err) { }
+		else {}
+    });
 	
 	phoneContact.forEach(function(contact)
 	{

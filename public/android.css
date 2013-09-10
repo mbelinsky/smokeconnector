@@ -127,6 +127,7 @@ background: -webkit-linear-gradient(top, rgb(213, 60, 0), rgb(247, 87, 46));
 
 #triggerbutton{
 	text-align: center;
+	color: maroon;
 	display: inline-block;
 	background-color: #181818;
 	border-radius: 5px;
