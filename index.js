@@ -572,6 +572,9 @@ app.post('/gathered', function(req, res) {
 	case '4':
 		lang='ru';
 		break;
+	case '6':
+		lang='pr';
+		break;
 	case '8':
 		lang='af';
 		break;
@@ -599,7 +602,7 @@ app.post('/gathered/2/:language', function(req, res) {
 	var choice=req.body.Digits;
 
 	var twimlLang=lang;
-	if(twimlLang==='af'|twimlLang==='ru'|twimlLang==='ch'){
+	if(twimlLang==='af'|twimlLang==='ru'|twimlLang==='ch'|twimlLang==='pr'){
 		twimlLang='en';
 	}
 
@@ -720,7 +723,7 @@ app.post('/incomingsms', function(req, res) {
 
 
 	if(message.toLowerCase().indexOf('russian')!==-1){
-		lang = 'en-gb';
+		lang = 'ru-RU';
 		smsResp='Спасибо за регистрацию на Канарских. качество воздуха в ваше '+zip +'является OK: 54 пыльцы High.';
 	}
 	if(message.toLowerCase().indexOf('spanish')!==-1){
