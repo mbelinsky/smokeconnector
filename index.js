@@ -544,6 +544,7 @@ app.post('/call', function(req, res) {
 		this.play(voice_url+'choose_intro.mp3');
 		this.play(voice_url+'choose_ch.mp3');
 		this.play(voice_url+'choose_ru.mp3');
+		this.play(voice_url+'choose_pr.mp3');
 		this.play(voice_url+'choose_af.mp3');
 		this.play(voice_url+'choose_canarynoise.mp3');
 	});
