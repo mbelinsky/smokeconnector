@@ -80,7 +80,7 @@
 			socket.on('newContact', function (msg) {
 				$('#home').append('<li id=n' + msg.number.replace("+","").replace('(','').replace(')','').replace(' ','') + '> <p class="number">'+msg.number+' <span style="color:#aaa">'+msg.firstName+' '+msg.lastName+'</span></p><p class="status">Ready</p></li>');			
 				})
-				.on('alert',function(msg){
+				.on('alert',function(msg){ 
 					$('#header').removeClass().addClass('headerAlarm');
 					$('#bottom').show();
 					$('#triggerbutton').hide();
