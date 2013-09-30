@@ -214,6 +214,13 @@ app.post('/settoken', function(req, responseHttp) {
 });
 
 
+app.get('/gettoken', function(req, responseHttp) {
+//	req.body.token
+	responseHttp.send(myToken);
+});
+
+
+
 app.post('/newmessage', function(req, responseHttp) {
 	console.log('New message from app: '+req.body.content);
 //Relay message to all responders	
