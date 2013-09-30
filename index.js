@@ -490,7 +490,7 @@ app.get('/test/newMessage/:number/:content', function (req, res) {
 	.set('notificationType','newMessage')
 	.set('number',req.params.number)
 	.set('content',req.params.content)
-	.alert('+'+req.params.number+': '+req.params.content)
+	.alert(req.params.number+': '+req.params.content)
 //	.alert('action-loc-key','Action text')
     .send(function (err) {
 	    if (err && err.toJSON) { res.json(400, { error: err.toJSON(false) }); } 
