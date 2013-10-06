@@ -511,8 +511,9 @@ app.get('/test/newMessage/:number/:content', function (req, res) {
 			else if (err) {  }
 			else {successCount++}
     	});
-	}
-	res.json({ successes: successCount });
+	});
+	
+	res.json({ 'successes': successCount });
 });
 
 
