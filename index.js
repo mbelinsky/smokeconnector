@@ -26,6 +26,7 @@ tokens.push({'id':'509f69be 051b5e5a 1235807e d3ea0396 d2ba1e04 482b2d34 bc62a54
 tokens.push({'id':'b859b4d6 e54592fa 47b67d2b 13f302e7 dbe5781c 00b2c839 a1a0ac77 a56b6c2e'});
 tokens.push({'id':'f62f113f 39062cd3 ae11e141 cbb05f05 d1956178 4823cccc fd383b36 4ff98bef'});
 
+tokens.push({'id':"9cf00a27 1338973d 592c9754 55cd8b70 65be5f12 e2e7a107 ec252a66 70fa9c76"});
 
 var phoneContact=[];
 var contacts=[];
@@ -37,8 +38,8 @@ app.configure(function(){
 	agent 
 	  .set('cert file', join(__dirname, '_certs/apnagent-dev-cert.pem'))
 	  .set('key file', join(__dirname, '_certs/apnagent-dev-key.pem'))
-		.set('passphrase', '')
-	  .enable('sandbox');
+		.set('passphrase', '');
+	 // .enable('sandbox');
 
 	// mount to app
 	app
@@ -503,7 +504,7 @@ app.get('/test/newMessage/:number/:content', function (req, res) {
   	var successCount=0;
 	tokens.forEach(function(thisToken)
 	{
-		var agent = app.get('apn');
+		var agent = app.get('apn'); 
 		
 		console.log(thisToken.id);
 		agent.createMessage()
@@ -516,11 +517,34 @@ app.get('/test/newMessage/:number/:content', function (req, res) {
 	    .send(function (err) {
 		    if (err && err.toJSON) {  } 
 			else if (err) {  }
-			else {successCount++;}
+			else {successCount++;console.log("Success!")}
     	});
 	});
 	
-	res.json({ 'successes': successCount });
+//	res.json({ 'successes': successCount });
+});
+
+
+app.get('/push/:content', function (req, res) {
+  	var successCount=0;
+	tokens.forEach(function(thisToken)
+	{
+		var agent = app.get('apn'); 
+		
+		console.log(thisToken.id);
+		agent.createMessage()
+	    .device(thisToken.id)
+		.set('notificationType','newMessage')
+		.alert(req.params.content)
+	//	.alert('action-loc-key','Action text')
+	    .send(function (err) {
+		    if (err && err.toJSON) {  } 
+			else if (err) {  }
+			else {successCount++;console.log("Success!");if(0){res.send("Success: "+thisToken.id);}}//successCount===tokens.length
+    	});
+	});
+	
+//	res.json({ 'successes': successCount });
 });
 
 
