@@ -14,12 +14,13 @@ var port = process.env.PORT || 80;
 host='http://54.213.213.231';
 var voice_url = host+'/voice/';
 
-
 myToken = require('./device');
 
 
 var twilioNumber = '+12406692679';//+14074776653'; 1 2406 MY CNRY
 var twilioNumberSmoke = '+14074776653';
+
+var tokens=[];
 
 var phoneContact=[];
 var contacts=[];
@@ -208,6 +209,10 @@ app.get('/twilioTest', function(req, res) {
 app.post('/settoken', function(req, responseHttp) {
 //	req.body.token
 	myToken=req.body.token.replace('<','').replace('>','');
+	
+	tokens.push({'id':myToken});
+	
+		
 	io.sockets.emit('newToken',{'token':myToken });
 	console.log('Assigned token:'+ myToken);
 	responseHttp.send('');
@@ -491,19 +496,23 @@ app.get('/test/updateFeedback/:number/:content', function (req, res) {
 
 app.get('/test/newMessage/:number/:content', function (req, res) {
 	var agent = app.get('apn');
-  	agent.createMessage()
-    .device(myToken)
-
-	.set('notificationType','newMessage')
-	.set('number',req.params.number)
-	.set('content',req.params.content)
-	.alert(req.params.number+': '+req.params.content)
-//	.alert('action-loc-key','Action text')
-    .send(function (err) {
-	    if (err && err.toJSON) { res.json(400, { error: err.toJSON(false) }); } 
-		else if (err) { res.json(400, { error: err.message }); }
-		else {res.json({ success: true });}
-    });
+  	var successCount=0;
+	tokens.forEach(function(thisToken)
+	{
+		agent.createMessage()
+	    .device(thisToken)
+		.set('notificationType','newMessage')
+		.set('number',req.params.number)
+		.set('content',req.params.content)
+		.alert(req.params.number+': '+req.params.content)
+	//	.alert('action-loc-key','Action text')
+	    .send(function (err) {
+		    if (err && err.toJSON) {  } 
+			else if (err) {  }
+			else {successCount++}
+    	});
+	}
+	res.json({ successes: successCount });
 });
 
 
