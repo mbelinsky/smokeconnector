@@ -504,7 +504,7 @@ app.get('/test/newMessage/:number/:content', function (req, res) {
   	var successCount=0;
 	tokens.forEach(function(thisToken)
 	{
-		console.log(thisToken.id)
+		console.log(thisToken.id);
 		agent.createMessage()
 	    .device(thisToken.id)
 		.set('notificationType','newMessage')
