@@ -500,10 +500,11 @@ app.get('/test/updateFeedback/:number/:content', function (req, res) {
 });
 
 app.get('/test/newMessage/:number/:content', function (req, res) {
-	var agent = app.get('apn');
   	var successCount=0;
 	tokens.forEach(function(thisToken)
 	{
+		var agent = app.get('apn');
+		
 		console.log(thisToken.id);
 		agent.createMessage()
 	    .device(thisToken.id)
@@ -515,7 +516,7 @@ app.get('/test/newMessage/:number/:content', function (req, res) {
 	    .send(function (err) {
 		    if (err && err.toJSON) {  } 
 			else if (err) {  }
-			else {successCount++}
+			else {successCount++;}
     	});
 	});
 	
