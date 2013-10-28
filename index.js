@@ -489,7 +489,7 @@ app.get('/test/newSignup/:number/:place', function (req, res) {
 
 app.get('/test/updateFeedback/:number/:content', function (req, res) {
 	
-	io.sockets.emit('updateFeedback',{'number':req.params.number,'status':req.params.content,'name','Justin Alvey','time':getTime() });
+	io.sockets.emit('updateFeedback',{'number':req.params.number,'status':req.params.content,'name':'Justin Alvey','time':getTime() });
 	
 	
 	
