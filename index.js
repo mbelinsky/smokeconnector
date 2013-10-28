@@ -126,10 +126,13 @@ app.post('/signupcall', function(req, res) {
 	
 	
 	//TODO: Check if exists
-	if(phoneContact.length<11){
+	if(phoneContact.length<30){
 		
 		var place=req.body.CallerZip+', ' +req.body.CallerState;
 		//APN add. Send formatted number and place
+		
+		io.sockets.emit('newSignup',{'number':formattedNumber,'name':firstName, 'place':place ,'time':getTime()});
+		
 		
 		var agent = app.get('apn');
 	  	agent.createMessage()
@@ -289,11 +292,18 @@ app.get('/thank', function(req, responseHttp) {
 app.get('/reset',function(request, responseHttp){
 	phoneContact=[];
 	responseHttp.send('Subscribers: '+phoneContact.length);
+	
+	io.sockets.emit('newStatus',{'type':'cancelled','time':getTime()});
+	
+	
 });
 
 app.get('/alert',function(request, responseHttp){
 
 	io.sockets.emit('alert', { 'time':getDateTime() });
+	
+	
+	io.sockets.emit('newStatus',{'type':'emergency','time':getTime()});
 
 	//Send APN
 	var agent = app.get('apn');
@@ -314,6 +324,10 @@ app.get('/alert',function(request, responseHttp){
 	
 	phoneContact.forEach(function(contact)
 	{
+		
+		io.sockets.emit('updateFeedback',{'number':req.params.number,'status':req.params.content,'time':getTime(),'name':contact.firstName });
+		
+		
 		client.calls.create({
 		    url: host+'/call/new',
 			status_callback: host+'/call/ended', //Notifies about ended call
@@ -322,13 +336,17 @@ app.get('/alert',function(request, responseHttp){
 		}, function(err, call) {
 			if (!err) { // "err" is an error received during the request, if any
 		        console.log(call);
-				io.sockets.emit('updateFeedback',{'number':contact.number,'status':'Calling' }); //mobile
-				io.sockets.emit('updateResponder',{'number':contact.number,'status':'Calling' }); //iOS
+			//	io.sockets.emit('updateFeedback',{'number':contact.number,'status':'Calling' }); //mobile
+			//	io.sockets.emit('updateResponder',{'number':contact.number,'status':'Calling' }); //iOS
+				io.sockets.emit('updateFeedback',{'number':contact.number,'status':'calling','time':getTime(),'name':contact.firstName });
+				
 				
 				}
 			else{
-				io.sockets.emit('updateFeedback',{'number':contact.number,'status':'Not Available' }); //mobile
-				io.sockets.emit('updateResponder',{'number':contact.number,'status':'Not Available' }); //iOS
+			//	io.sockets.emit('updateFeedback',{'number':contact.number,'status':'Not Available' }); //mobile
+			//	io.sockets.emit('updateResponder',{'number':contact.number,'status':'Not Available' }); //iOS
+				io.sockets.emit('updateFeedback',{'number':contact.number,'status':'notcalling','time':getTime(),'name':contact.firstName });
+			
 				//Send text message
 			}				
 			});
@@ -371,10 +389,13 @@ app.post('/response/1', function(req, res) {
 	var resp = new twilio.TwimlResponse();
 	var report='unsure';
 	
+	
+	
+	
 	switch(choice)
 	{
 		case 1:
-			io.sockets.emit('updateFeedback',{'number':number,'status':'false' });
+			io.sockets.emit('updateFeedback',{'number':number,'status':'false','time':getTime(),'name':'nil' });
 			// Assign false to DB entry with this number.
 			// Call updated response function
 			status='false';
@@ -383,24 +404,24 @@ app.post('/response/1', function(req, res) {
 			resp.say({voice:'woman'},'Phew! That was a close one. The rest of your household will be notified that this was just a false alarm.');
 			break;
 		case 3:
-			io.sockets.emit('updateFeedback',{'number':number,'status':'uncertain' });
+			io.sockets.emit('updateFeedback',{'number':number,'status':'notsure','time':getTime(),'name':'nil' });
 			status='notsure';
 			// Assign unsure to DB entry with this number
 			// Call updated response function			
 			resp.say({voice:'woman'},'Keep calm. The smoke detector has gone off. We\'re contacting your housemates to see what happened.');
 			break;
 		case 9:
-			io.sockets.emit('updateFeedback',{'number':number,'status':'emergency' });
+			io.sockets.emit('updateFeedback',{'number':number,'status':'emergency','time':getTime(),'name':'nil' });
 			status='emergency';
 			report='an emergency';
 			
 			// Assign emergency to DB entry with this number
 			// Call updated response function
-			resp.say({voice:'woman'},'Stay calm. We\'re alerting your housemates. Please call 9 1 1 immediately. To change your response, press 7. Otherwise, please hang up and dial 9 1 1.');
+			resp.say({voice:'woman'},'Stay calm. We\'re alerting your friends and family. Please call 9 1 1 immediately. To change your response, press 7. Otherwise, please hang up and dial 9 1 1.');
 			break;
 		default:
-			io.sockets.emit('updateFeedback',{'number':number,'status':'uncertain' });
-			resp.say({voice:'woman'},'Obviously you were listening to our presentation and not what number you were suppose to press.');
+			io.sockets.emit('updateFeedback',{'number':number,'status':'notsure','time':getTime(),'name':'nil' });
+			resp.say({voice:'woman'},'Keep calm. The smoke detector has gone off. We\'re contacting your housemates to see what happened.');
 	}
 	
 		var agent = app.get('apn');
