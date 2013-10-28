@@ -481,7 +481,7 @@ app.get('/test/newSignup/:number/:place', function (req, res) {
 			else if (err) { res.json(400, { error: err.message }); }
 			else {res.json({ success: true });}
 	    });
-	}
+	});
 });
 
 
