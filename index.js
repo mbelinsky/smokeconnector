@@ -438,7 +438,7 @@ app.get('/responderslist', function(req, res){
 app.get('/test/newStatus/:statusType', function (req, res) {
 	
 	
-	io.sockets.emit('newStatus',{'type':req.params.statusType,'time':getTime());
+	io.sockets.emit('newStatus',{'type':req.params.statusType,'time':getTime()});
 	
 	
 	var agent = app.get('apn');
@@ -468,7 +468,7 @@ app.get('/test/newStatus/:statusType', function (req, res) {
 
 app.get('/test/newSignup/:number/:place', function (req, res) {
 	
-	io.sockets.emit('newSignup',{'number':req.params.number,'name':'Justin Alvey', 'place':req.params.place },'time':getTime());
+	io.sockets.emit('newSignup',{'number':req.params.number,'name':'Justin Alvey', 'place':req.params.place ,'time':getTime()});
 
 		var agent = app.get('apn');
 	  	agent.createMessage()
