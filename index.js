@@ -325,7 +325,6 @@ app.get('/alert',function(request, responseHttp){
 	phoneContact.forEach(function(contact)
 	{
 		
-		io.sockets.emit('updateFeedback',{'number':req.params.number,'status':req.params.content,'time':getTime(),'name':contact.firstName });
 		
 		
 		client.calls.create({
