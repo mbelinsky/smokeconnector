@@ -485,7 +485,11 @@ app.get('/test/newSignup/:number/:place', function (req, res) {
 
 app.get('/test/updateFeedback/:number/:content', function (req, res) {
 	
-//	io.sockets.emit('updateFeedback',{'number':req.params.number,'status':req.params.content });
+	io.sockets.emit('updateFeedback',{'number':req.params.number,'status':req.params.content,'time':getTime() });
+	
+	
+	
+	
 	var agent = app.get('apn');
   	agent.createMessage()
     .device(myToken)
@@ -824,15 +828,25 @@ function getDateTime() {
     var sec  = date.getSeconds();
     sec = (sec < 10 ? "0" : "") + sec;
 
-    var year = date.getFullYear();
-
-    var month = date.getMonth() + 1;
-    month = (month < 10 ? "0" : "") + month;
-
-    var day  = date.getDate();
-    day = (day < 10 ? "0" : "") + day;
-
     return hour + ":" + min + ":" + sec;
+
+}
+
+
+function getTime() {
+
+    var date = new Date();
+
+    var hour = date.getHours();
+    hour = (hour < 10 ? "0" : "") + hour;
+
+    var min  = date.getMinutes();
+    min = (min < 10 ? "0" : "") + min;
+
+    var sec  = date.getSeconds();
+    sec = (sec < 10 ? "0" : "") + sec;
+
+    return hour + ":" + min;
 
 }
 
