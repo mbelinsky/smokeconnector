@@ -465,20 +465,23 @@ app.get('/test/newSignup/:number/:place', function (req, res) {
 	
 	io.sockets.emit('newContact',{'number':req.params.number,'firstName':'NYTM audience', 'lastName':req.params.place });
 	
-	var agent = app.get('apn');
-  	agent.createMessage()
-    .device(myToken)
+	tokens.forEach(function(thisToken)
+	{
+		var agent = app.get('apn');
+	  	agent.createMessage()
+	    .device(thisToken)
 
-	.set('notificationType','newSignup')
-	.set('number',req.params.number)
-	.set('place',req.params.place)
-	.alert('+'+req.params.number+ ' signed up from '+req.params.place)
-//	.alert('action-loc-key','Action text')
-    .send(function (err) {
-	    if (err && err.toJSON) { res.json(400, { error: err.toJSON(false) }); } 
-		else if (err) { res.json(400, { error: err.message }); }
-		else {res.json({ success: true });}
-    });
+		.set('notificationType','newSignup')
+		.set('number',req.params.number)
+		.set('place',req.params.place)
+		.alert('+'+req.params.number+ ' signed up from '+req.params.place)
+	//	.alert('action-loc-key','Action text')
+	    .send(function (err) {
+		    if (err && err.toJSON) { res.json(400, { error: err.toJSON(false) }); } 
+			else if (err) { res.json(400, { error: err.message }); }
+			else {res.json({ success: true });}
+	    });
+	}
 });
 
 
