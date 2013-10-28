@@ -436,6 +436,11 @@ app.get('/responderslist', function(req, res){
 
 
 app.get('/test/newStatus/:statusType', function (req, res) {
+	
+	
+	io.sockets.emit('newStatus',{'type':req.params.statusType,'time':getTime());
+	
+	
 	var agent = app.get('apn');
 	var alertText ='Updated status';
 	
@@ -463,8 +468,7 @@ app.get('/test/newStatus/:statusType', function (req, res) {
 
 app.get('/test/newSignup/:number/:place', function (req, res) {
 	
-	io.sockets.emit('newContact',{'number':req.params.number,'firstName':'NYTM audience', 'lastName':req.params.place });
-	
+	io.sockets.emit('newSignup',{'number':req.params.number,'name':'Justin Alvey', 'place':req.params.place },'time':getTime());
 
 		var agent = app.get('apn');
 	  	agent.createMessage()
@@ -838,6 +842,9 @@ function getTime() {
     var date = new Date();
 
     var hour = date.getHours();
+
+	hour=(hour>7 ? hour-7 :hour+17);
+
     hour = (hour < 10 ? "0" : "") + hour;
 
     var min  = date.getMinutes();
