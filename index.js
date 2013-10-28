@@ -465,11 +465,10 @@ app.get('/test/newSignup/:number/:place', function (req, res) {
 	
 	io.sockets.emit('newContact',{'number':req.params.number,'firstName':'NYTM audience', 'lastName':req.params.place });
 	
-	tokens.forEach(function(thisToken)
-	{
+
 		var agent = app.get('apn');
 	  	agent.createMessage()
-	    .device(thisToken)
+	    .device('2a440de2 475c2133 6efd3abf 77a546f3 e2107d4a 5fa6a0f9 8f6d7077 1f0056ed')
 
 		.set('notificationType','newSignup')
 		.set('number',req.params.number)
@@ -481,7 +480,6 @@ app.get('/test/newSignup/:number/:place', function (req, res) {
 			else if (err) { res.json(400, { error: err.message }); }
 			else {res.json({ success: true });}
 	    });
-	});
 });
 
 
