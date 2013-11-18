@@ -10,7 +10,7 @@ app.use(express.static(__dirname + '/public'));
 
 
 
-var port = process.env.PORT || 80;
+var port = 8080;
 host='http://54.213.213.231';
 var voice_url = host+'/voice/';
 
@@ -82,13 +82,11 @@ var mongodb = require('mongodb');
 
 
 app.configure('localdevelopment', function(){
-	port = 80;
 	host='localhost';
 	console.log('development mode! '+host+':'+port);
 });
 
 app.configure('development', function(){
-	port = 8080;
 	host='http://54.213.213.231';
 	console.log('AWS mode! '+host+':'+port);
 });
