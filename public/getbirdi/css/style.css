@@ -874,24 +874,22 @@ input[type="text"], select, textarea {
 /* Custom styling for press logos */
 
 .press_logo_w{
-	max-height: 60px;
+	max-height: 45px;
 	margin: 20px 20px;
 }
 
 .press_logo{
-	max-height: 110px;
+	max-height: 100px;
 	margin: 20px 20px;
 }
 
 .press_center{
 	vertical-align:middle;
-	width:1350px;
 	margin:0 auto;
 	padding-top:60px;
 	
 }
 .press{
-	width:1350px;
 	margin:0 auto;
 	padding-bottom:50px;
 	
