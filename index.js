@@ -282,7 +282,7 @@ app.get('/thank', function(req, responseHttp) {
 			    body:'Thank you from AT&T and Birdi. We hope you liked the Birdi smart smoke detector\'re here to keep your home healthy and safe. Be the first to reserve yours at www.indiegogo.com/projects/birdi'
 			}, function(error, message) {});
 		});
-		responseHttp.send('');
+		responseHttp.send('Thanked?: '+thanked);
 	}
 });
 
@@ -311,6 +311,8 @@ app.get('/reset',function(request, responseHttp){
 app.get('/alert',function(request, responseHttp){
 	
 	if(!alarm_happened){
+		
+		alarm_happened=true;
 			io.sockets.emit('alert', { 'time':getDateTime() });
 
 
