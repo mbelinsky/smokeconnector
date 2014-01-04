@@ -19,6 +19,31 @@
 		
 		
 		 <a onclick="trigger('a','alert')" >Alert</a>
+		 <a onclick="trigger('a','emergency')" >Emergency</a>
+		 <a onclick="trigger('a','caution')" >Caution</a>
+		 <a onclick="trigger('a','clear')" >Clear</a>
+		
+		
+		<br>
+		
+		 <a onclick="trigger('b','alert')" >Alert</a>
+		 <a onclick="trigger('b','emergency')" >Emergency</a>
+		 <a onclick="trigger('b','caution')" >Caution</a>
+		 <a onclick="trigger('b','clear')" >Clear</a>
+		
+		<br>
+		
+		 <a onclick="trigger('c','alert')" >Alert</a>
+		 <a onclick="trigger('c','emergency')" >Emergency</a>
+		 <a onclick="trigger('c','caution')" >Caution</a>
+		 <a onclick="trigger('c','clear')" >Clear</a>
+		
+		<br>
+
+		 <a onclick="trigger('0','alert')" >Alert</a>
+		 <a onclick="trigger('0','emergency')" >Emergency</a>
+		 <a onclick="trigger('0','caution')" >Caution</a>
+		 <a onclick="trigger('0','clear')" >Clear</a>
 		
 		
 		
@@ -30,9 +55,7 @@
 			
 			<script>
 			
-			var a='lg3BeaoJU-cW';
-			var b='VkOhOLv4qQQD';
-			var c='-wRCgPSXRkC9';
+
 			
 			function trigger(id,status){
 				$.get('/trigger_imp/'+id+'/'+status,function(data){});

@@ -3,11 +3,11 @@ var express = require('express')
   , apnagent = require('apnagent')
   , join = require('path').join
   , http = require('http')
+  , https = require('https')
   , server = http.createServer(app)
   , io = require('socket.io').listen(server, { log: false });
 app.use(express.bodyParser());
 app.use(express.static(__dirname + '/public'));
-
 
 
 var port = 8080;
@@ -24,6 +24,19 @@ var tokens=[];
 
 var alarm_happened=false;
 var thanked=false;
+
+
+//Imp id's
+
+var imp_a='lg3BeaoJU-cW';
+var imp_b='VkOhOLv4qQQD';
+var imp_c='-wRCgPSXRkC9';
+
+var imp_0='mDSTbW1EcX24';
+
+//var imp_2a=
+
+
 
 tokens.push({'id':'509f69be 051b5e5a 1235807e d3ea0396 d2ba1e04 482b2d34 bc62a54d 2c33e23b'});
 tokens.push({'id':'b859b4d6 e54592fa 47b67d2b 13f302e7 dbe5781c 00b2c839 a1a0ac77 a56b6c2e'});
@@ -886,7 +899,49 @@ function getTime() {
 
 app.get('/trigger_imp/:id/:status', function (req, res) {
 	
-	console.log(req.params.id+' : '+req.params.status);
+	var imp_id='';
+	
+	switch(req.params.id)
+	{
+	case 'a':
+	  imp_id=imp_a;
+	  break;
+	
+	case 'b':
+	  imp_id=imp_b;
+	  break;
+	
+	case 'c':
+	  imp_id=imp_c;
+	  break;
+	
+	case '0':
+	  imp_id=imp_0;
+	  break;
+	
+	case '2a':
+	  imp_id=imp_2a;
+	  break;
+	case '2b':
+	  imp_id=imp_2b;
+	  break;
+	
+	default:
+	  imp_id=imp_a;
+	}
+	
+	
+	console.log("Posting to https://agent.electricimp.com/"+imp_id+'?status='+req.params.status);
+	
+	
+	https.get("https://agent.electricimp.com/"+imp_id+'?status='+req.params.status, function(res) {
+	  console.log("statusCode: ", res.statusCode);
+	  res.on('data', function(d) {
+	  });
+	}).on('error', function(e) {
+	  console.error(e);
+	});
+	
 	res.send('');
 });
 
