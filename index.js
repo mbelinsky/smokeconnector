@@ -284,7 +284,7 @@ app.get('/thank', function(req, responseHttp) {
 			}, function(error, message) {});
 		});
 	}
-	responseHttp.send('Thanked?: '+thanked_temp);
+	responseHttp.send('Thanked '+ phoneContact.length + 'people?: '+thanked_temp);
 	
 });
 
