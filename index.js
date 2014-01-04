@@ -72,6 +72,8 @@ app.configure(function () {
   });
 });
 
+
+/*
 var mongodb = require('mongodb');
              var db = new mongodb.Db('nodejitsu_justinlv_nodejitsudb3831052954',
                new mongodb.Server('ds059887.mongolab.com', 59887, {})
@@ -82,6 +84,7 @@ var mongodb = require('mongodb');
                  console.log('MongoDB connected and authenticated.')
                });
              });
+*/
 
 
 app.configure('localdevelopment', function(){
