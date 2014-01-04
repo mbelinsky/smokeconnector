@@ -283,8 +283,9 @@ app.get('/thank', function(req, responseHttp) {
 			    body:'Thank you from AT&T and Birdi. We hope you liked the Birdi smart smoke detector\'re here to keep your home healthy and safe. Be the first to reserve yours at www.indiegogo.com/projects/birdi'
 			}, function(error, message) {});
 		});
-		responseHttp.send('Thanked?: '+thanked_temp);
 	}
+	responseHttp.send('Thanked?: '+thanked_temp);
+	
 });
 
 
