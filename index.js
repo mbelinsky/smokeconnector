@@ -315,6 +315,13 @@ app.get('/reset',function(request, responseHttp){
 	
 	io.sockets.emit('newStatus',{'type':'cancelled','time':getTime()});
 	
+	
+	trigger_imp('a','none');
+	trigger_imp('b','none');
+	trigger_imp('c','none');
+	trigger_imp('0','none');
+	
+	
 });
 
 
@@ -376,7 +383,6 @@ app.get('/alert',function(request, responseHttp){
 		trigger_imp('b','emergency');
 		trigger_imp('c','emergency');
 		trigger_imp('0','emergency');
-		trigger_imp('a','emergency');
 		
 		
 		
