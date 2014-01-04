@@ -84,7 +84,7 @@
 					$('#header').removeClass().addClass('headerAlarm');
 					$('#bottom').show();
 					$('#triggerbutton').hide();
-					$('#firedetected').html("Fire detected at "+msg.time+'!');
+					$('#firedetected').html("Smoke detected at "+msg.time+'!');
 				})
 			.on('updateFeedback', function (msg) {
 					var contact=$('#n'+msg.number.replace('+','').replace('(','').replace(')','').replace(' ','') );

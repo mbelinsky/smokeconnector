@@ -847,6 +847,7 @@ function getDateTime() {
 
     var date = new Date();
 
+
     var hour = date.getHours();
     hour = (hour < 10 ? "0" : "") + hour;
 
@@ -883,6 +884,11 @@ function getTime() {
 
 
 
+app.get('/trigger_imp/:id/:status', function (req, res) {
+	
+	console.log(req.params.id+' : '+req.params.status);
+	res.send('');
+});
 
 
 
@@ -895,6 +901,14 @@ app.get('/', function(req, res){
 		server : host+':'+port
 	});
 });
+
+
+app.get('/control', function(req, res){
+	console.log(req.url);
+	res.render('control', {
+	});
+});
+
 
 app.get('/responses', function(req, res){
 	console.log(req.url);

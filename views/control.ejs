@@ -1,0 +1,46 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"/>
+	  	<meta name="apple-mobile-web-app-capable" content="yes" />
+	
+		<title>Birdi Control Panel</title>
+		<!--Updated  4:37PM, Sept 10th, 2013 -->
+		<script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+	    
+		<link href='http://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
+	</head>
+	
+	<body>
+		
+		<div id="header">
+				<h2>Control panel</h2>
+		</div>
+		
+		
+		 <a onclick="trigger('a','alert')" >Alert</a>
+		
+		
+		
+		
+		<ul id="home" title="Responders">
+			
+		</ul>
+			
+			
+			<script>
+			
+			var a='lg3BeaoJU-cW';
+			var b='VkOhOLv4qQQD';
+			var c='-wRCgPSXRkC9';
+			
+			function trigger(id,status){
+				$.get('/trigger_imp/'+id+'/'+status,function(data){});
+				console.log('https://agent.electricimp.com/'+id+'?status='+status);
+			}
+			
+			
+			</script>
+		
+	</body>
+</html>
