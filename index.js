@@ -353,7 +353,7 @@ app.get('/alert',function(request, responseHttp){
 			});
 
 	}
-	responseHttp.send('Alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime()+"Happened already?"+alarm_happened);// echo the result back});
+	responseHttp.send('Alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime()+"  Happened already? "+alarm_happened);// echo the result back});
 
 });
 
