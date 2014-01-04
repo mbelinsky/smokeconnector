@@ -372,11 +372,11 @@ app.get('/alert',function(request, responseHttp){
 			});
 			
 			
-		trigger_imp(a,emergency);
-		trigger_imp(b,emergency);
-		trigger_imp(c,emergency);
-		trigger_imp(0,emergency);
-		trigger_imp(a,emergency);
+		trigger_imp('a','emergency');
+		trigger_imp('b','emergency');
+		trigger_imp('c','emergency');
+		trigger_imp('0','emergency');
+		trigger_imp('a','emergency');
 		
 		
 		
