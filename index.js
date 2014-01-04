@@ -22,6 +22,9 @@ var twilioNumberSmoke = '+14074776653';
 
 var tokens=[];
 
+var alarm_happened=false;
+var thanked=false;
+
 tokens.push({'id':'509f69be 051b5e5a 1235807e d3ea0396 d2ba1e04 482b2d34 bc62a54d 2c33e23b'});
 tokens.push({'id':'b859b4d6 e54592fa 47b67d2b 13f302e7 dbe5781c 00b2c839 a1a0ac77 a56b6c2e'});
 tokens.push({'id':'f62f113f 39062cd3 ae11e141 cbb05f05 d1956178 4823cccc fd383b36 4ff98bef'});
@@ -124,7 +127,7 @@ app.post('/signupcall', function(req, res) {
 	
 	
 	//TODO: Check if exists
-	if(phoneContact.length<30){
+	if(phoneContact.length<300){
 		
 		var place=req.body.CallerZip+', ' +req.body.CallerState;
 		//APN add. Send formatted number and place
@@ -150,11 +153,11 @@ app.post('/signupcall', function(req, res) {
 	
 		phoneContact.push({'number':formattedNumber,'firstName':firstName,'lastName':place});
 		
-		resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +' as a responder to emergencies at Mark\'s residence,  If there is an emergency and Mark may be in danger, you will be contacted.');
+		resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +'. Welcome to the Birdy demo. If our device detects a fire, carbon monoxide or air quality emergency, we\'ll give you a call. To learn more, go to get birdy dot com.');
 	}
 	else{
-		resp.say({voice:'woman', language:'en'},'Hi there. As there are already 10 responders, you will be notified of updates by text message');
-		thankOnly.push(req.body.From);
+		resp.say({voice:'woman', language:'en'},'Hi there. There are already 300 people signed up. Not to worry, you can just sit back and enjoy the demo. To learn more, go to get birdy dot com.');
+	//	thankOnly.push(req.body.From);
 	}
 	
 	res.type('text/xml');
@@ -262,98 +265,94 @@ app.post('/addcontact', function(req, responseHttp) {
 	
 });
 
-app.get('/reset',function(request, responseHttp){
-	phoneContact=[];
-	responseHttp.send('');
-});
+
 
 app.get('/thank', function(req, responseHttp) {
-	thankOnly.forEach(function(tosms)
-	{
-		client.sms.messages.create({
-		    to:tosms,
-		    from:twilioNumberSmoke,
-		    body:'Thanks for viewing our test demo, we hope you liked the Birdi smart smoke detector. There are great things to come. To learn more, check out birdi.co'
-		}, function(error, message) {});
-	});
-	responseHttp.send('');
+
+	if(!thanked){
+		thanked=true;
+		phoneContact.forEach(function(tosms)
+		{
+			client.sms.messages.create({
+			    to:tosms,
+			    from:twilioNumberSmoke,
+			    body:'Thank you from AT&T and Birdi. We hope you liked the Birdi smart smoke detector\'re here to keep your home healthy and safe. Be the first to reserve yours at www.indiegogo.com/projects/birdi'
+			}, function(error, message) {});
+		});
+		responseHttp.send('');
+	}
 });
 
 
 
+
+
+app.get('/reset',function(request, responseHttp){
+	phoneContact=[];
+	alarm_happened=false;
+	thanked=false;
+	responseHttp.send('');
+	
+	responseHttp.send('Subscribers: '+phoneContact.length);
+	
+	io.sockets.emit('newStatus',{'type':'cancelled','time':getTime()});
+	
+});
 
 
 
 
 //Posts from device
 
-app.get('/reset',function(request, responseHttp){
-	phoneContact=[];
-	responseHttp.send('Subscribers: '+phoneContact.length);
-	
-	io.sockets.emit('newStatus',{'type':'cancelled','time':getTime()});
-	
-	
-});
 
 app.get('/alert',function(request, responseHttp){
-
-	io.sockets.emit('alert', { 'time':getDateTime() });
 	
-	
-	io.sockets.emit('newStatus',{'type':'emergency','time':getTime()});
+	if(!alarm_happened){
+			io.sockets.emit('alert', { 'time':getDateTime() });
 
-	//Send APN
-	var agent = app.get('apn');
-	var alertText ='Fire detected at your home';
 
-  	agent.createMessage()
-    .device(myToken)
-	.set('notificationType','newStatus')
-	.set('statusType','emergency')
-	.set('time',getDateTime())
-	.alert(alertText)
-//	.alert('action-loc-key','Action text')
-    .send(function (err) {
-	    if (err && err.toJSON) {  } 
-		else if (err) { }
-		else {}
-    });
-	
-	phoneContact.forEach(function(contact)
-	{
-		
-		
-		
-		client.calls.create({
-		    url: host+'/call/new',
-			status_callback: host+'/call/ended', //Notifies about ended call
-		    to: contact.number,
-		    from: twilioNumberSmoke,
-		}, function(err, call) {
-			if (!err) { // "err" is an error received during the request, if any
-		        console.log(call);
-			//	io.sockets.emit('updateFeedback',{'number':contact.number,'status':'Calling' }); //mobile
-			//	io.sockets.emit('updateResponder',{'number':contact.number,'status':'Calling' }); //iOS
-				io.sockets.emit('updateFeedback',{'number':contact.number,'status':'calling','time':getTime(),'name':contact.firstName });
-				
-				
-				}
-			else{
-			//	io.sockets.emit('updateFeedback',{'number':contact.number,'status':'Not Available' }); //mobile
-			//	io.sockets.emit('updateResponder',{'number':contact.number,'status':'Not Available' }); //iOS
-				io.sockets.emit('updateFeedback',{'number':contact.number,'status':'notcalling','time':getTime(),'name':contact.firstName });
-			
-				//Send text message
-			}				
+			io.sockets.emit('newStatus',{'type':'emergency','time':getTime()});
+
+			//Send APN
+			var agent = app.get('apn');
+			var alertText ='Fire detected at your home';
+
+		  	agent.createMessage()
+		    .device(myToken)
+			.set('notificationType','newStatus')
+			.set('statusType','emergency')
+			.set('time',getDateTime())
+			.alert(alertText)
+		//	.alert('action-loc-key','Action text')
+		    .send(function (err) {
+			    if (err && err.toJSON) {  } 
+				else if (err) { }
+				else {}
+		    });
+
+			phoneContact.forEach(function(contact)
+			{
+				client.calls.create({
+				    url: host+'/call/new',
+					status_callback: host+'/call/ended', //Notifies about ended call
+				    to: contact.number,
+				    from: twilioNumberSmoke,
+				}, function(err, call) {
+					if (!err) { // "err" is an error received during the request, if any
+				        console.log(call);
+						io.sockets.emit('updateFeedback',{'number':contact.number,'status':'calling','time':getTime(),'name':contact.firstName });
+						}
+					else{
+						io.sockets.emit('updateFeedback',{'number':contact.number,'status':'notcalling','time':getTime(),'name':contact.firstName });
+						//Send text message
+					}				
+					});
 			});
-	});
-	responseHttp.send('Hard alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime());// echo the result back});
+
+	}
+	responseHttp.send('Alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime()+"Happened already?"+alarm_happened);// echo the result back});
+
 });
-
-
-
-
 
 
 
@@ -367,11 +366,11 @@ app.post('/call/new', function(req, res) {
 //	CallSid
 	
 	resp.gather({timeout:60,action:host+'/response/1',numDigits:1},function(){
-		this.say({voice:'woman', language:lang},'Justin\'s birdy has reported a fire alarm. Press 9 if this is an emergency. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. ')
+		this.say({voice:'woman', language:lang},'Birdy has detected a fire. Press 9 if this is an emergency. Press 1 if you know it\'s a false alarm. Or press 3 if you are uncertain. ')
+		.pause({ length:3 })
+		.say({voice:'woman', language:lang},'Birdy has detected a fire. Press 9 if this is an emergency. Press 1 if you know it\'s a false alarm. Or press 3 if you are uncertain.')
 		.pause({ length:3 })
 		.say({voice:'woman', language:lang},'Press 9 if this is an emergency. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. ')
-		.pause({ length:3 })
-		.say({voice:'woman', language:lang},'Justin\'s birdy has reported a fire alarm. Press 9 if this is an emergency. Press 1 if you know it\'s a false alarm. Press 3 if you are not sure. ')
 		.pause({ length:3 })
 	});
 	res.type('text/xml');
@@ -385,10 +384,7 @@ app.post('/response/1', function(req, res) {
 	var choice=parseInt(req.body.Digits);
 	var resp = new twilio.TwimlResponse();
 	var report='unsure';
-	
-	
-	
-	
+
 	switch(choice)
 	{
 		case 1:
@@ -398,14 +394,14 @@ app.post('/response/1', function(req, res) {
 			status='false';
 			
 			report='false alarm';
-			resp.say({voice:'woman'},'Phew! That was a close one. The rest of your household will be notified that this was just a false alarm.');
+			resp.say({voice:'woman'},'Glad to know you are safe. We will check with everyone else and let them know you are okay.');
 			break;
 		case 3:
 			io.sockets.emit('updateFeedback',{'number':number,'status':'notsure','time':getTime(),'name':'nil' });
 			status='notsure';
 			// Assign unsure to DB entry with this number
 			// Call updated response function			
-			resp.say({voice:'woman'},'Keep calm. The smoke detector has gone off. We\'re contacting your housemates to see what happened.');
+			resp.say({voice:'woman'},'Keep calm. We\'re contacting your housemates to see what happened, and we will keep you updated.');
 			break;
 		case 9:
 			io.sockets.emit('updateFeedback',{'number':number,'status':'emergency','time':getTime(),'name':'nil' });
@@ -418,7 +414,7 @@ app.post('/response/1', function(req, res) {
 			break;
 		default:
 			io.sockets.emit('updateFeedback',{'number':number,'status':'notsure','time':getTime(),'name':'nil' });
-			resp.say({voice:'woman'},'Keep calm. The smoke detector has gone off. We\'re contacting your housemates to see what happened.');
+			resp.say({voice:'woman'},'Keep calm. We\'re contacting your housemates to see what happened, and we will keep you updated.');
 	}
 	
 		var agent = app.get('apn');
