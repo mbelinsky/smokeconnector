@@ -272,6 +272,7 @@ app.post('/addcontact', function(req, responseHttp) {
 
 app.get('/thank', function(req, responseHttp) {
 
+	var thanked_temp=thanked;
 	if(!thanked){
 		thanked=true;
 		phoneContact.forEach(function(tosms)
@@ -282,7 +283,7 @@ app.get('/thank', function(req, responseHttp) {
 			    body:'Thank you from AT&T and Birdi. We hope you liked the Birdi smart smoke detector\'re here to keep your home healthy and safe. Be the first to reserve yours at www.indiegogo.com/projects/birdi'
 			}, function(error, message) {});
 		});
-		responseHttp.send('Thanked?: '+thanked);
+		responseHttp.send('Thanked?: '+thanked_temp);
 	}
 });
 
@@ -309,6 +310,8 @@ app.get('/reset',function(request, responseHttp){
 
 
 app.get('/alert',function(request, responseHttp){
+	
+	var happened_temp=alarm_happened;
 	
 	if(!alarm_happened){
 		
@@ -355,7 +358,8 @@ app.get('/alert',function(request, responseHttp){
 			});
 
 	}
-	responseHttp.send('Alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime()+"  Happened already? "+alarm_happened);// echo the result back});
+	responseHttp.send('Alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime()+"  Happened already? "+happened_temp);// echo the result back});
+
 
 });
 
