@@ -370,6 +370,17 @@ app.get('/alert',function(request, responseHttp){
 					}				
 					});
 			});
+			
+			
+		trigger_imp(a,emergency);
+		trigger_imp(b,emergency);
+		trigger_imp(c,emergency);
+		trigger_imp(0,emergency);
+		trigger_imp(a,emergency);
+		
+		
+		
+			
 
 	}
 	responseHttp.send('Alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime()+"  Happened already? "+happened_temp);// echo the result back});
@@ -847,7 +858,48 @@ app.post('/incomingsms', function(req, res) {
 
 
 
-
+function trigger_imp(id, status){
+	
+	switch(id)
+	{
+	case 'a':
+	  imp_id=imp_a;
+	  break;
+	
+	case 'b':
+	  imp_id=imp_b;
+	  break;
+	
+	case 'c':
+	  imp_id=imp_c;
+	  break;
+	
+	case '0':
+	  imp_id=imp_0;
+	  break;
+	
+	case '2a':
+	  imp_id=imp_2a;
+	  break;
+	case '2b':
+	  imp_id=imp_2b;
+	  break;
+	
+	default:
+	  imp_id=imp_a;
+	}
+	
+	console.log("Posting to https://agent.electricimp.com/"+imp_id+'?status='+status);
+	
+	https.get("https://agent.electricimp.com/"+imp_id+'?status='+status, function(res) {
+	  console.log("statusCode: ", res.statusCode);
+	  res.on('data', function(d) {
+	  });
+	}).on('error', function(e) {
+	  console.error(e);
+	});
+	
+}
 
 
 
@@ -901,57 +953,17 @@ app.get('/trigger_imp/:id/:status', function (req, res) {
 	
 	var imp_id='';
 	
-	switch(req.params.id)
-	{
-	case 'a':
-	  imp_id=imp_a;
-	  break;
 	
-	case 'b':
-	  imp_id=imp_b;
-	  break;
+	trigger_imp(req.params.id, req.params.status);
 	
-	case 'c':
-	  imp_id=imp_c;
-	  break;
-	
-	case '0':
-	  imp_id=imp_0;
-	  break;
-	
-	case '2a':
-	  imp_id=imp_2a;
-	  break;
-	case '2b':
-	  imp_id=imp_2b;
-	  break;
-	
-	default:
-	  imp_id=imp_a;
-	}
-	
-	
-	console.log("Posting to https://agent.electricimp.com/"+imp_id+'?status='+req.params.status);
-	
-	
-	https.get("https://agent.electricimp.com/"+imp_id+'?status='+req.params.status, function(res) {
-	  console.log("statusCode: ", res.statusCode);
-	  res.on('data', function(d) {
-	  });
-	}).on('error', function(e) {
-	  console.error(e);
-	});
 	
 	res.send('');
+	
 });
-
-
-
 
 
 app.get('/', function(req, res){
 	console.log(req.url);
-	
 	res.render('dash', {
 		server : host+':'+port
 	});
