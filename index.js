@@ -304,7 +304,7 @@ app.get('/thank', function(req, responseHttp) {
 			client.sms.messages.create({
 			    to:tosms.number,
 			    from:twilioNumberSmoke,
-			    body:'Thanks from AT&T and Birdi. We\'re here to keep your home healthy & safe. Be the first to reserve yours at www.indiegogo.com/projects/birdi'
+			    body:'Thanks from AT&T and Birdi. We\'re here to keep your home healthy & safe. Be the first to reserve your Birdi at www.indiegogo.com/projects/birdi'
 			}, function(error, message) {});
 		});
 	}
