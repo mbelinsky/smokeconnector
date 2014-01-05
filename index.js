@@ -183,6 +183,8 @@ app.post('/signupcall', function(req, res) {
 
 
 app.post('/newsms', function(req, res) {
+	console.log('New message:'+req.body.Body);
+	
 	var message=req.body.Body;
 	var number=req.body.From.replace('+','').replace('(','').replace(')','').replace(' ','').replace('-','');
 	
@@ -288,8 +290,10 @@ app.get('/thank', function(req, responseHttp) {
 	var thanked_temp=thanked;
 	if(!thanked){
 		thanked=true;
+		
 		phoneContact.forEach(function(tosms)
 		{
+			console.log('Sending sms to: '+tosms);
 			client.sms.messages.create({
 			    to:tosms,
 			    from:twilioNumberSmoke,
