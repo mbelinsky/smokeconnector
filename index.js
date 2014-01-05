@@ -24,6 +24,7 @@ var tokens=[];
 
 var alarm_happened=false;
 var thanked=false;
+var triggered_red=false;
 
 
 //Imp id's
@@ -46,8 +47,8 @@ tokens.push({'id':"9cf00a27 1338973d 592c9754 55cd8b70 65be5f12 e2e7a107 ec252a6
 
 var phoneContact=[];
 
-phoneContact.push({'number':'13474669327','firstName':'Mark','lastName':'Belinsky'});
-phoneContact.push({'number':'14159203651','firstName':'Justin','lastName':'A'});
+//phoneContact.push({'number':'13474669327','firstName':'Mark','lastName':'Belinsky'});
+//phoneContact.push({'number':'14159203651','firstName':'Justin','lastName':'A'});
 
 
 
@@ -281,7 +282,7 @@ app.post('/addcontact', function(req, responseHttp) {
 	
 	phoneContact.push({'number':req.body.number,'firstName':req.body.firstName, 'lastName' :req.body.lastName});	
 	
-	io.sockets.emit('newContact',{'number':req.body.number,'firstName':req.body.firstName, 'lastName':req.body.lastName });
+	io.sockets.emit('newContact',{'number':req.body.number,'firstName':req.body.firstName, 'lastName': ''}); //req.body.lastName
 	
 	responseHttp.send('');
 	
@@ -308,16 +309,6 @@ app.get('/thank', function(req, responseHttp) {
 });
 
 
-app.get('/iftt/:hash', function(req, responseHttp) {
-
-	client.sms.messages.create({
-	    to:'14155085198',
-	    from:twilioNumberSmoke,
-	    body:'New message: #'+req.params.hash
-	}, function(error, message) {});
-
-	responseHttp.send('Sent with #'+ req.params.hash);
-});
 
 
 
@@ -326,6 +317,9 @@ app.get('/reset',function(request, responseHttp){
 	phoneContact=[];
 	alarm_happened=false;
 	thanked=false;
+	triggered_red=false;
+	
+	
 	responseHttp.send('');
 	
 	responseHttp.send('Subscribers: '+phoneContact.length);
@@ -350,6 +344,8 @@ app.get('/reset',function(request, responseHttp){
 app.get('/alert',function(request, responseHttp){
 	
 	var happened_temp=alarm_happened;
+	
+	
 	
 	if(!alarm_happened){
 		
@@ -401,6 +397,9 @@ app.get('/alert',function(request, responseHttp){
 		trigger_imp('b','alert');
 		trigger_imp('c','alert');
 		trigger_imp('0','alert');
+		
+		ifft('alert');
+		
 		
 	}
 	responseHttp.send('Alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime()+"  Happened already? "+happened_temp);// echo the result back});
@@ -462,10 +461,17 @@ app.post('/response/1', function(req, res) {
 			status='emergency';
 			report='an emergency';
 			
-			trigger_imp('a','emergency');
-			trigger_imp('b','emergency');
-			trigger_imp('c','emergency');
-			trigger_imp('0','emergency');
+			if(!triggered_red){
+				triggered_red=true;
+				trigger_imp('a','emergency');
+				trigger_imp('b','emergency');
+				trigger_imp('c','emergency');
+				trigger_imp('0','emergency');
+				
+				ifft('emergency');
+				
+			}
+			
 			
 			// Assign emergency to DB entry with this number
 			// Call updated response function
@@ -927,7 +933,13 @@ function trigger_imp(id, status){
 }
 
 
-
+function ifft(tag){
+	client.sms.messages.create({
+	    to:'14155085198',
+	    from:twilioNumberSmoke,
+	    body:'#'+tag
+	}, function(error, message) {});
+}
 
 
 

@@ -78,7 +78,7 @@
 		var socket = io.connect('<%=server%>');
 		socket.on('connect', function () {
 			socket.on('newContact', function (msg) {
-				$('#home').append('<li id=n' + msg.number.replace("+","").replace('(','').replace(')','').replace(' ','') + '> <p class="number">'+msg.number+' <span style="color:#aaa">'+msg.firstName+' '+msg.lastName+'</span></p><p class="status">Ready</p></li>');			
+				$('#home').append('<li id=n' + msg.number.replace("+","").replace('(','').replace(')','').replace(' ','') + '> <p class="number">'+msg.number.substring(0,7)+'XXXX'+' <span style="color:#aaa">'+msg.firstName+' '+msg.lastName+'</span></p><p class="status">Ready</p></li>');			
 				})
 				.on('alert',function(msg){ 
 					$('#header').removeClass().addClass('headerAlarm');
