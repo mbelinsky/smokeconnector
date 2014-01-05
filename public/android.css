@@ -153,6 +153,7 @@ p.status{
 
 p.number{
 	float:left;
+	font-weight:bolder;
 }
 
 
@@ -169,7 +170,8 @@ padding:15px 0 15px 10px;
 
 
 .emergency{
-	color:maroon;
+	font-weight:bolder;
+	font-size:18px;
 }
 
 /* #DF535D; */
