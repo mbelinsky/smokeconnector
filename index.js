@@ -429,6 +429,25 @@ app.get('/alert',function(request, responseHttp){
 });
 
 
+app.get('/emergency', function(req, res) {
+	io.sockets.emit('updateFeedback',{'number':number,'status':'emergency','time':getTime(),'name':'nil' });
+	status='emergency';
+	report='an emergency';
+	
+	if(!triggered_red){
+		triggered_red=true;
+		trigger_imp('a','emergency');
+		trigger_imp('b','emergency');
+		trigger_imp('c','emergency');
+		trigger_imp('0','emergency');
+		
+		ifft('emergency');
+	}
+	
+	responseHttp.send('Emergency triggered');// echo the result back});
+}
+
+
 
 
 //Responses from Twilio in the phonecall
