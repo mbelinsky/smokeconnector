@@ -429,7 +429,7 @@ app.get('/alert',function(request, responseHttp){
 });
 
 
-app.get('/emergency', function(req, res) {
+app.get('/emergency', function(req, responseHttp) {
 	
 	io.sockets.emit('updateFeedback',{'number':'14159203651','status':'emergency','time':getTime(),'name':'nil' });
 	
