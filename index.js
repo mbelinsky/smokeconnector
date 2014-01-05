@@ -319,9 +319,9 @@ app.get('/reset_clear',function(request, responseHttp){
 	
 	phoneContact=[];
 	
-	alarm_happened=false;
+	
 	thanked=false;
-	triggered_red=false;
+	
 		
 	io.sockets.emit('newStatus',{'type':'cancelled','time':getTime()});
 	
@@ -339,7 +339,6 @@ app.get('/reset_clear',function(request, responseHttp){
 
 app.get('/reset',function(request, responseHttp){
 	alarm_happened=false;
-	thanked=false;
 	triggered_red=false;
 	
 	io.sockets.emit('newStatus',{'type':'cancelled','time':getTime()});
@@ -531,8 +530,6 @@ app.get('/responderslist', function(req, res){
 
 
 
-
-
 //APNS tests
 
 
@@ -540,7 +537,6 @@ app.get('/test/newStatus/:statusType', function (req, res) {
 	
 	
 	io.sockets.emit('newStatus',{'type':req.params.statusType,'time':getTime()});
-	
 	
 	var agent = app.get('apn');
 	var alertText ='Updated status';
