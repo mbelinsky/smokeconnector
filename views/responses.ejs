@@ -44,7 +44,7 @@
 				if(data.length>0){
 					console.log(data);
 					data.forEach(function(msg){
-						$('#home').append('<li id=n' + msg.number.replace("+","") + '> <p class="number">'+msg.number+' <span style="color:#eee">'+msg.firstName+' '+msg.lastName+'</span></p><p class="status">Ready</p></li>');
+						$('#home').append('<li id=n' + msg.number.replace("+","") + '> <p class="number">'+msg.number+' <span style="color:#eee">'+msg.firstName+' '+msg.lastName+'</span></p><p class="status">Added</p></li>');
 					});
 				}
 			}, "json");
@@ -70,7 +70,7 @@
 		var socket = io.connect('<%=server%>');
 		socket.on('connect', function () {
 			socket.on('newContact', function (msg) {
-				$('#home').append('<li id=n' + msg.number.replace("+","").replace('(','').replace(')','').replace(' ','') + '> <p class="number">'+msg.number.substring(0,7)+'XXXX'+' <span style="color:#eee">'+msg.firstName+' '+msg.lastName+'</span></p><p class="status">Ready</p></li>');			
+				$('#home').append('<li id=n' + msg.number.replace("+","").replace('(','').replace(')','').replace(' ','') + '> <p class="number">'+msg.number.substring(0,7)+'XXXX'+' <span style="color:#eee">'+msg.firstName+' '+msg.lastName+'</span></p><p class="status">Added</p></li>');			
 				})
 				.on('alert',function(msg){ 
 				//	$('#header').removeClass().addClass('headerAlarm');
