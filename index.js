@@ -378,19 +378,13 @@ app.get('/alert',function(request, responseHttp){
 					}				
 					});
 			});
-			
 
 
-
-		trigger_imp('a','emergency');
-		trigger_imp('b','emergency');
-		trigger_imp('c','emergency');
-		trigger_imp('0','emergency');
+		trigger_imp('a','alert');
+		trigger_imp('b','alert');
+		trigger_imp('c','alert');
+		trigger_imp('0','alert');
 		
-		
-		
-			
-
 	}
 	responseHttp.send('Alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime()+"  Happened already? "+happened_temp);// echo the result back});
 
@@ -450,6 +444,11 @@ app.post('/response/1', function(req, res) {
 			io.sockets.emit('updateFeedback',{'number':number,'status':'emergency','time':getTime(),'name':'nil' });
 			status='emergency';
 			report='an emergency';
+			
+			trigger_imp('a','emergency');
+			trigger_imp('b','emergency');
+			trigger_imp('c','emergency');
+			trigger_imp('0','emergency');
 			
 			// Assign emergency to DB entry with this number
 			// Call updated response function
