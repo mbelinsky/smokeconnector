@@ -1,10 +1,15 @@
 
-
+/*
+green #66c396
+yellow #f8cf73
+orange #FF992B
+red #ea6254
+*/
 
 body {
 	font-family:	Droid Sans;
 	color: 			#f0f0f0;
-	background:		#181818;
+	background:		#66c396;
 }
 
 #callme{
@@ -34,9 +39,10 @@ body {
 	left:0%;
 	width:100%;
 	height:94px;
+	background: gray;
 }
 
-
+/*
 .headerCanary{
 	background: #FFD400 ;
 	background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(#FFD400), to(#FBB040)) ;
@@ -48,11 +54,12 @@ background: rgb(213, 60, 0) ;
 background: -webkit-gradient(linear, 0% 0%, 0% 100%, from(rgb(213, 60, 0)), to(rgb(247, 87, 46))) ;
 background: -webkit-linear-gradient(top, rgb(213, 60, 0), rgb(247, 87, 46));
 }
+*/
 
 #firedetected{
 	bottom: 55px;
 	position: absolute;
-	color:rgb(213, 60, 0);
+	color:rgb(255, 255, 255);
 	width:100%;
 	text-align:center;
 }
@@ -61,9 +68,9 @@ background: -webkit-linear-gradient(top, rgb(213, 60, 0), rgb(247, 87, 46));
 .button{
 	text-align: center;
 	display: inline-block;
-	background-color: rgb(213, 60, 0);
+	background-color: white; 
 	border-radius: 5px;
-	color: white;
+	color: #ea6254;
 	padding: 12px 18px;
 	font-size: 22px;
 	position:absolute;
@@ -95,8 +102,7 @@ background: -webkit-linear-gradient(top, rgb(213, 60, 0), rgb(247, 87, 46));
 	width:100%;
 	border-top: 1px solid rgba(255,255,255,.3);
 	z-index:2;
-	background:#181818;
-	
+	background:#66c396;	
 }
 
 
@@ -114,7 +120,6 @@ background: -webkit-linear-gradient(top, rgb(213, 60, 0), rgb(247, 87, 46));
 #resetbutton{
 	text-align: center;
 	display: inline-block;
-	background-color: #181818;
 	border-radius: 5px;
 	border-color: rgba(255,255,255,.3);
 	padding: 12px 18px;
@@ -127,9 +132,8 @@ background: -webkit-linear-gradient(top, rgb(213, 60, 0), rgb(247, 87, 46));
 
 #triggerbutton{
 	text-align: center;
-	color: maroon;
+	color: #69c598;
 	display: inline-block;
-	background-color: #181818;
 	border-radius: 5px;
 	border-color: rgba(255,255,255,.3);
 	padding: 12px 18px;

@@ -85,12 +85,16 @@
 					$('#bottom').show();
 					$('#triggerbutton').hide();
 					$('#firedetected').html("Smoke detected at "+msg.time+'!');
+					document.body.style.background = '#f8cf73';
+					document.getElementById("bottom").style.backgroundColor="#f8cf73";
 				})
 			.on('updateFeedback', function (msg) {
 					var contact=$('#n'+msg.number.replace('+','').replace('(','').replace(')','').replace(' ','') );
 					contact.children('p.status').html(capitaliseFirstLetter(msg.status));
 					if(msg.status==='emergency'){
 						contact.children('p.status').addClass('emergency');
+						document.body.style.background = '#ea6254';
+						document.getElementById("bottom").style.backgroundColor="#ea6254";
 					}
 			});
 		});
