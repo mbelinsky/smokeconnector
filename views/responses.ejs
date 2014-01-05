@@ -44,12 +44,11 @@
 					data.forEach(function(msg){
 						
 						var temp_name=msg.firstName;
-						if(temp_name.length>7){
-							temp_name=temp_name.substring(0,7)+'...';
+						if(temp_name.length>10){
+							temp_name=temp_name.substring(0,10)+'...';
 						}
 						
-						
-						$('#home').append('<li id=n' + msg.number.replace("+","") + '> <p class="number">'+msg.number+' <span style="color:#eee">'+msg.temp_name+': '+msg.place+'</span></p><p class="status">Added</p></li>');
+						$('#home').append('<li id=n' + msg.number.replace("+","") + '> <p class="number">'+temp_name+' from '+msg.place+'</p><p class="status">Added</p></li>');
 					});
 				}
 			}, "json");
@@ -81,7 +80,7 @@
 				if(temp_name.length>7){
 					temp_name=temp_name.substring(0,7)+'...';
 				}
-				$('#home').append('<li id=n' + msg.number.replace("+","").replace('(','').replace(')','').replace(' ','') + '> <p class="number">'+msg.number.substring(1,6)+'xxxx'+' <span style="color:#eee">'+temp_name+': '+msg.place+'</span></p><p class="status">Added</p></li>');			
+				$('#home').append('<li id=n' + msg.number.replace("+","").replace('(','').replace(')','').replace(' ','') + '> <p class="number">'+temp_name+' from '+msg.place+'</span></p><p class="status">Added</p></li>');			
 				})
 				.on('alert',function(msg){ 
 				//	$('#header').removeClass().addClass('headerAlarm');
