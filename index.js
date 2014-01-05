@@ -361,6 +361,7 @@ app.get('/alert',function(request, responseHttp){
 
 			phoneContact.forEach(function(contact)
 			{
+				console.log('Calling: '+contact.number);
 				client.calls.create({
 				    url: host+'/call/new',
 					status_callback: host+'/call/ended', //Notifies about ended call
@@ -378,7 +379,9 @@ app.get('/alert',function(request, responseHttp){
 					});
 			});
 			
-			
+
+
+
 		trigger_imp('a','emergency');
 		trigger_imp('b','emergency');
 		trigger_imp('c','emergency');
