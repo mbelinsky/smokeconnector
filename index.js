@@ -293,9 +293,9 @@ app.get('/thank', function(req, responseHttp) {
 		
 		phoneContact.forEach(function(tosms)
 		{
-			console.log('Sending sms to: '+tosms);
+			console.log('Sending sms to: '+tosms.number);
 			client.sms.messages.create({
-			    to:tosms,
+			    to:tosms.number,
 			    from:twilioNumberSmoke,
 			    body:'Thank you from AT&T and Birdi. We hope you liked the Birdi smart smoke detector\'re here to keep your home healthy and safe. Be the first to reserve yours at www.indiegogo.com/projects/birdi'
 			}, function(error, message) {});
