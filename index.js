@@ -298,7 +298,7 @@ app.get('/thank', function(req, responseHttp) {
 			    to:tosms.number,
 			    from:twilioNumberSmoke,
 			    body:'Thank you from AT&T and Birdi. We hope you liked the Birdi smart smoke detector\'re here to keep your home healthy and safe. Be the first to reserve yours at www.indiegogo.com/projects/birdi'
-			}, function(error, message) {console.log('Error sending sms to: '+tosms.number+' : '+message);});
+			}, function(error, message) {console.log('Error sending sms to: '+tosms.number+' : '+ error +' : '+message.sid);});
 		});
 	}
 	responseHttp.send('Thanked '+ phoneContact.length + ' people?: '+thanked_temp);
