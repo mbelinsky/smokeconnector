@@ -445,7 +445,7 @@ app.get('/emergency', function(req, res) {
 	}
 	
 	responseHttp.send('Emergency triggered');// echo the result back});
-}
+});
 
 
 
