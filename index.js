@@ -45,8 +45,13 @@ tokens.push({'id':'f62f113f 39062cd3 ae11e141 cbb05f05 d1956178 4823cccc fd383b3
 tokens.push({'id':"9cf00a27 1338973d 592c9754 55cd8b70 65be5f12 e2e7a107 ec252a66 70fa9c76"});
 
 var phoneContact=[];
+
+phoneContact.push({'number':'13474669327','firstName':Mark,'lastName':Belinsky});
+phoneContact.push({'number':'14159203651','firstName':Justin,'lastName':A});
+
+
+
 var contacts=[];
-var thankOnly=[];
 
 app.configure(function(){
 	var agent = new apnagent.Agent();
@@ -208,7 +213,6 @@ app.post('/newsms', function(req, res) {
 				else {}
 		    });
 	} else {
-		thankOnly.push(req.body.From);
 		//Send thank you message back (or not), and don't do anything else.
 	}
 
