@@ -293,6 +293,9 @@ app.post('/addcontact', function(req, responseHttp) {
 app.get('/thank', function(req, responseHttp) {
 
 	var thanked_temp=thanked;
+	
+	var length_temp=phoneContact.length;
+	
 	if(!thanked){
 		thanked=true;
 		phoneContact.forEach(function(tosms)
@@ -305,24 +308,39 @@ app.get('/thank', function(req, responseHttp) {
 			}, function(error, message) {});
 		});
 	}
-	responseHttp.send('Thanked '+ phoneContact.length + ' people?: '+thanked_temp);
+	
+	phoneContact=[];
+	
+	responseHttp.send('Thanked '+ length_temp + ' people?: '+thanked_temp);
+});
+
+
+app.get('/reset_clear',function(request, responseHttp){
+	
+	phoneContact=[];
+	
+	alarm_happened=false;
+	thanked=false;
+	triggered_red=false;
+		
+	io.sockets.emit('newStatus',{'type':'cancelled','time':getTime()});
+	
+	
+	trigger_imp('a','none');
+	trigger_imp('b','none');
+	trigger_imp('c','none');
+	trigger_imp('0','none');
+	
+	responseHttp.send('Subscribers: '+phoneContact.length);
+	
 });
 
 
 
-
-
-
 app.get('/reset',function(request, responseHttp){
-	phoneContact=[];
 	alarm_happened=false;
 	thanked=false;
 	triggered_red=false;
-	
-	
-	responseHttp.send('');
-	
-	responseHttp.send('Subscribers: '+phoneContact.length);
 	
 	io.sockets.emit('newStatus',{'type':'cancelled','time':getTime()});
 	
@@ -332,8 +350,12 @@ app.get('/reset',function(request, responseHttp){
 	trigger_imp('c','none');
 	trigger_imp('0','none');
 	
+	responseHttp.send('Subscribers: '+phoneContact.length);
 	
 });
+
+
+
 
 
 
