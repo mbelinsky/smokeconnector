@@ -32,8 +32,6 @@
 			<a href="tel:911" class="button">Call 911</a>
 			
 			<h3 id="firedetected"></h3>
-			
-			
 
 		</div>
 		
@@ -44,7 +42,14 @@
 				if(data.length>0){
 					console.log(data);
 					data.forEach(function(msg){
-						$('#home').append('<li id=n' + msg.number.replace("+","") + '> <p class="number">'+msg.number+' <span style="color:#eee">'+msg.firstName+' '+msg.lastName+'</span></p><p class="status">Added</p></li>');
+						
+						var temp_name=msg.firstName;
+						if(temp_name.length>7){
+							temp_name=temp_name.substring(0,7)+'...';
+						}
+						
+						
+						$('#home').append('<li id=n' + msg.number.replace("+","") + '> <p class="number">'+msg.number+' <span style="color:#eee">'+msg.temp_name+': '+msg.place+'</span></p><p class="status">Added</p></li>');
 					});
 				}
 			}, "json");
@@ -53,6 +58,8 @@
 		function resetResponders(){
 			$.get('reset',function(data){});
 			console.log("Resetting");
+			document.body.style.background = '#66c396';
+			document.getElementById("bottom").style.backgroundColor="#66c396";
 		}
 		
 		function trigger(){
@@ -70,7 +77,11 @@
 		var socket = io.connect('<%=server%>');
 		socket.on('connect', function () {
 			socket.on('newContact', function (msg) {
-				$('#home').append('<li id=n' + msg.number.replace("+","").replace('(','').replace(')','').replace(' ','') + '> <p class="number">'+msg.number.substring(0,7)+'XXXX'+' <span style="color:#eee">'+msg.firstName+' '+msg.lastName+'</span></p><p class="status">Added</p></li>');			
+				var temp_name=msg.firstName;
+				if(temp_name.length>7){
+					temp_name=temp_name.substring(0,7)+'...';
+				}
+				$('#home').append('<li id=n' + msg.number.replace("+","").replace('(','').replace(')','').replace(' ','') + '> <p class="number">'+msg.number.substring(1,6)+'xxxx'+' <span style="color:#eee">'+temp_name+': '+msg.place+'</span></p><p class="status">Added</p></li>');			
 				})
 				.on('alert',function(msg){ 
 				//	$('#header').removeClass().addClass('headerAlarm');

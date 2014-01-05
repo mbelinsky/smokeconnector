@@ -151,10 +151,10 @@ app.post('/signupcall', function(req, res) {
 	//TODO: Check if exists
 	if(phoneContact.length<300){
 		
-		var place=req.body.CallerZip+', ' +req.body.CallerState;
+		var place=req.body.CallerState;//req.body.CallerZip+', ' +
 		//APN add. Send formatted number and place
 		
-		io.sockets.emit('newSignup',{'number':formattedNumber,'name':firstName, 'place':place ,'time':getTime()});
+//		io.sockets.emit('newSignup',{'number':formattedNumber,'name':firstName, 'place':place ,'time':getTime()});
 		
 		
 		var agent = app.get('apn');
@@ -171,9 +171,9 @@ app.post('/signupcall', function(req, res) {
 			else if (err) { }
 			else {}
 	    });
-		io.sockets.emit('newContact',{'number':formattedNumber,'firstName':firstName, 'lastName':place});
+		io.sockets.emit('newContact',{'number':formattedNumber,'firstName':firstName, 'place':place});
 	
-		phoneContact.push({'number':formattedNumber,'firstName':firstName,'lastName':place});
+		phoneContact.push({'number':formattedNumber,'firstName':firstName,'place':place});
 		
 		resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +'. Welcome to the Birdy demo. If our device detects a fire, carbon monoxide or air quality emergency, we\'ll give you a call. To learn more, go to get birdy dot com.');
 	}
