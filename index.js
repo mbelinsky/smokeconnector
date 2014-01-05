@@ -46,8 +46,8 @@ tokens.push({'id':"9cf00a27 1338973d 592c9754 55cd8b70 65be5f12 e2e7a107 ec252a6
 
 var phoneContact=[];
 
-phoneContact.push({'number':'13474669327','firstName':Mark,'lastName':Belinsky});
-phoneContact.push({'number':'14159203651','firstName':Justin,'lastName':A});
+phoneContact.push({'number':'13474669327','firstName':'Mark','lastName':'Belinsky'});
+phoneContact.push({'number':'14159203651','firstName':'Justin','lastName':'A'});
 
 
 
@@ -294,7 +294,6 @@ app.get('/thank', function(req, responseHttp) {
 	var thanked_temp=thanked;
 	if(!thanked){
 		thanked=true;
-		
 		phoneContact.forEach(function(tosms)
 		{
 			console.log('Sending sms to: '+tosms.number);
@@ -302,7 +301,7 @@ app.get('/thank', function(req, responseHttp) {
 			    to:tosms.number,
 			    from:twilioNumberSmoke,
 			    body:'Thank you from AT&T and Birdi. We hope you liked the Birdi smart smoke detector\'re here to keep your home healthy and safe. Be the first to reserve yours at www.indiegogo.com/projects/birdi'
-			}, function(error, message) {console.log('Error sending sms to: '+tosms.number+' : '+ error +' : '+message.sid);});
+			}, function(error, message) {console.log('Error sending sms to: '+tosms.number+' : '+ error +' : '+message.id);});
 		});
 	}
 	responseHttp.send('Thanked '+ phoneContact.length + ' people?: '+thanked_temp);
