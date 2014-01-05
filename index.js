@@ -296,7 +296,7 @@ app.get('/thank', function(req, responseHttp) {
 	
 	var length_temp=phoneContact.length;
 	
-	if(!thanked){
+	if(1){  //!thanked){
 		thanked=true;
 		phoneContact.forEach(function(tosms)
 		{
