@@ -377,6 +377,7 @@ app.get('/alert',function(request, responseHttp){
 	if(!alarm_happened){
 		
 		alarm_happened=true;
+		
 			io.sockets.emit('alert', { 'time':getDateTime() });
 
 
@@ -432,6 +433,12 @@ app.get('/alert',function(request, responseHttp){
 	responseHttp.send('Alert. Subscribers: '+phoneContact.length+'. Time occurred: '+getDateTime()+"  Happened already? "+happened_temp);// echo the result back});
 
 
+});
+
+app.get('/clear_happened', function(req, responseHttp) {
+	alarm_happened=false;
+	
+	responseHttp.send('alarm_happened='+alarm_happened);
 });
 
 
