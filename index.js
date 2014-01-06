@@ -52,6 +52,9 @@ var phoneContact=[];
 phoneContact.push({'number':'15412922422','firstName':'Adonya','place':'OR'});
 phoneContact.push({'number':'12132680395','firstName':'Brady','place':'CA'});
 //phoneContact.push({'number':'14159203651','firstName':'Justin','place':'CA'});
+
+phoneContact.push({'number':'12403544364','firstName':'Bryan','place':'WA'});
+
 phoneContact.push({'number':'13474669327','firstName':'Mark','place':'NY'});
 
 
