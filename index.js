@@ -435,11 +435,20 @@ app.get('/alert',function(request, responseHttp){
 
 });
 
-app.get('/clear_happened', function(req, responseHttp) {
+app.get('/happened_true', function(req, responseHttp) {
+	
+	alarm_happened=true;
+	
+	responseHttp.send('alarm_happened='+alarm_happened);
+});
+
+app.get('/happened_false', function(req, responseHttp) {
+	
 	alarm_happened=false;
 	
 	responseHttp.send('alarm_happened='+alarm_happened);
 });
+
 
 
 app.get('/emergency', function(req, responseHttp) {
