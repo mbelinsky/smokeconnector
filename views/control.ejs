@@ -14,10 +14,11 @@
 	<body>
 		
 		<div id="header">
-				<h2>Control panel</h2>
+				<h2>Manual triggers</h2>
 		</div>
 		
-		
+		<h4>A - Shinyei</h4>
+
 		 <a onclick="trigger('a','alert')" >Alert</a>
 		 <a onclick="trigger('a','emergency')" >Emergency</a>
 		 <a onclick="trigger('a','caution')" >Caution</a>
@@ -25,6 +26,7 @@
 		
 		
 		<br>
+		<h4>B - CO2</h4>
 		
 		 <a onclick="trigger('b','alert')" >Alert</a>
 		 <a onclick="trigger('b','emergency')" >Emergency</a>
@@ -32,6 +34,7 @@
 		 <a onclick="trigger('b','clear')" >Clear</a>
 		
 		<br>
+		<h4>C - Sharp only</h4>
 		
 		 <a onclick="trigger('c','alert')" >Alert</a>
 		 <a onclick="trigger('c','emergency')" >Emergency</a>
@@ -39,14 +42,23 @@
 		 <a onclick="trigger('c','clear')" >Clear</a>
 		
 		<br>
+		
+		<h4>C - None</h4>
 
 		 <a onclick="trigger('0','alert')" >Alert</a>
 		 <a onclick="trigger('0','emergency')" >Emergency</a>
 		 <a onclick="trigger('0','caution')" >Caution</a>
 		 <a onclick="trigger('0','clear')" >Clear</a>
 		
-		
-		
+			<h2>Control panel</h2>
+			<ul>
+				<li><a onclick="happened_false" >happened_false </a></li>
+				<li><a onclick="alert" >alert</a></li>
+				<li><a onclick="emergency" >emergency</a></li>
+				<li><a onclick="reset" >mute</a></li>
+				<li><a onclick="thank" >thank then clear names</a></li>
+				<li><a onclick="reset_clear" >clear names</a></li>				
+			</ul>
 		
 		<ul id="home" title="Responders">
 			
@@ -61,6 +73,31 @@
 				$.get('/trigger_imp/'+id+'/'+status,function(data){});
 				console.log('https://agent.electricimp.com/'+id+'?status='+status);
 			}
+			function happened_false(){
+				$.get('/happened_false',function(){});
+				console.log('Triggered /happened_false');
+			}
+			function alert(){
+				$.get('/alert',function(){});
+				console.log('Triggered /alert');
+			}
+			function emergency(){
+				$.get('/emergency',function(){});
+				console.log('Triggered /emergency');
+			}
+			function reset(){
+				$.get('/reset',function(){});
+				console.log('Triggered /reset');
+			}
+			function thank(){
+				$.get('/thank',function(){});
+				console.log('Triggered /happened_false');
+			}
+			function reset_clear(){
+				$.get('/reset_clear',function(){});
+				console.log('Triggered /reset_clear');
+			}
+			
 			
 			
 			</script>
