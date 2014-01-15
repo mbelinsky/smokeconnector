@@ -300,7 +300,7 @@ app.get('/red', function(req, responseHttp) {
 	
 	responseHttp.send('');
 	
-}
+});
 
 
 app.get('/orange', function(req, responseHttp) {
@@ -308,7 +308,7 @@ app.get('/orange', function(req, responseHttp) {
 	
 	responseHttp.send('');
 	
-}
+});
 
 
 
