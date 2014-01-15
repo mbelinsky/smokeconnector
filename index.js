@@ -298,6 +298,7 @@ app.post('/addcontact', function(req, responseHttp) {
 app.get('/red', function(req, responseHttp) {
 	io.sockets.emit('newStatus',{'type':'emergency_red','time':getTime()});
 	
+	responseHttp.send('');
 	
 }
 
@@ -305,6 +306,7 @@ app.get('/red', function(req, responseHttp) {
 app.get('/orange', function(req, responseHttp) {
 	io.sockets.emit('newStatus',{'type':'emergency','time':getTime()});
 	
+	responseHttp.send('');
 	
 }
 
