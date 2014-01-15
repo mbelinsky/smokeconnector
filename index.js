@@ -178,7 +178,10 @@ app.post('/signupcall', function(req, res) {
 			else {}
 	    });
 		io.sockets.emit('newContact',{'number':formattedNumber,'firstName':firstName, 'place':place});
-		io.sockets.emit('newSignup',{'number':formattedNumber,'firstName':firstName, 'place':place});
+		
+		
+		//iOS
+		io.sockets.emit('newSignup',{'number':formattedNumber,'name':firstName, 'place':place});
 	
 		phoneContact.push({'number':formattedNumber,'firstName':firstName,'place':place});
 		
