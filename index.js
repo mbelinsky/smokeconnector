@@ -455,6 +455,9 @@ app.get('/emergency', function(req, responseHttp) {
 	
 	io.sockets.emit('updateFeedback',{'number':'14159203651','status':'emergency','time':getTime(),'name':'nil' });
 	
+	io.sockets.emit('newStatus',{'type':'emergency_red','time':getTime()});
+	
+	
 	if(!triggered_red){
 		triggered_red=true;
 		trigger_imp('a','emergency');
