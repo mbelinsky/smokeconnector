@@ -5,7 +5,7 @@ var express = require('express')
   , http = require('http')
   , https = require('https')
   , server = http.createServer(app)
-  , io = require('socket.io').listen(server, { log: false });
+  , io = require('socket.io').listen(server, { log: true });
 app.use(express.bodyParser());
 app.use(express.static(__dirname + '/public'));
 
