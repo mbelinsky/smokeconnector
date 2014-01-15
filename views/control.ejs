@@ -12,9 +12,20 @@
 	
 	<body>
 		
-		<div id="header">
-				<h2>Manual triggers</h2>
-		</div>
+		
+		<h2>Control panel</h2>
+		<ul>
+			<li><a onclick="happened_false()" >happened_false </a></li>
+			<li><a onclick="alert()" >alert</a></li>
+			<li><a onclick="emergency()" >emergency</a></li>
+			<li><a onclick="reset()" >mute</a></li>
+			<li><a onclick="thank()" >thank then clear names</a></li>
+			<li><a onclick="reset_clear()" >clear names</a></li>				
+		</ul>
+		
+		
+		
+		<h2>Individual triggers</h2>
 		
 		<h4>A - Shinyei</h4>
 
@@ -49,15 +60,7 @@
 		 <a onclick="trigger('0','caution')" >Caution</a>
 		 <a onclick="trigger('0','clear')" >Clear</a>
 		
-			<h2>Control panel</h2>
-			<ul>
-				<li><a onclick="happened_false()" >happened_false </a></li>
-				<li><a onclick="alert()" >alert</a></li>
-				<li><a onclick="emergency()" >emergency</a></li>
-				<li><a onclick="reset()" >mute</a></li>
-				<li><a onclick="thank()" >thank then clear names</a></li>
-				<li><a onclick="reset_clear()" >clear names</a></li>				
-			</ul>
+
 		
 		<ul id="home" title="Responders">
 			
