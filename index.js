@@ -478,7 +478,7 @@ app.get('/emergency', function(req, responseHttp) {
 	io.sockets.emit('newStatus',{'type':'emergency_red','time':getTime()});
 	
 	
-	if(!triggered_red){
+	if(1){//}!triggered_red){
 		triggered_red=true;
 		trigger_imp('a','emergency');
 		trigger_imp('b','emergency');
