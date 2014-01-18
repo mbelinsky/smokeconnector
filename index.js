@@ -375,6 +375,9 @@ app.get('/reset',function(request, responseHttp){
 	trigger_imp('c','none');
 	trigger_imp('0','none');
 	
+	ifft('quiet');
+	
+	
 	responseHttp.send('Subscribers: '+phoneContact.length);
 	
 });
