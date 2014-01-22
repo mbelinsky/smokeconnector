@@ -320,6 +320,8 @@ app.get('/thank', function(req, responseHttp) {
 
 	var thanked_temp=thanked;
 	
+	ifft('quiet');
+
 	var length_temp=phoneContact.length;
 	
 	if(1){  //!thanked){
@@ -348,6 +350,7 @@ app.get('/reset_clear',function(request, responseHttp){
 	
 	thanked=false;
 	
+	ifft('quiet');
 		
 	io.sockets.emit('newStatus',{'type':'cancelled','time':getTime()});
 	
