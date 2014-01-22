@@ -623,6 +623,16 @@ app.get('/responderslist', function(req, res){
 });
 
 
+app.get('/ifft/:statusType', function (req, res) {
+	
+	
+	ifft(req.params.statusType);
+
+	res.send(req.params.statusType);
+});
+
+
+
 
 //APNS tests
 
