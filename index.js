@@ -58,7 +58,7 @@ phoneContact.push({'number':'13474669327','firstName':'Mark','place':'NY'});
 
 //phoneContact.push({'number':'12403544364','firstName':'Bryan','place':'WA'});
 
-phoneContact.push({'number':'13474669327','firstName':'Mark','place':'NY'});
+//phoneContact.push({'number':'13474669327','firstName':'Mark','place':'NY'});
 
 
 var contacts=[];
