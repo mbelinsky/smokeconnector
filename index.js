@@ -384,6 +384,9 @@ app.get('/reset',function(request, responseHttp){
 	trigger_imp('c','none');
 	trigger_imp('0','none');
 	
+	trigger_imp('bird','emergency');
+	
+	
 	trigger_imp('teddy','none');
 	
 	
@@ -458,6 +461,9 @@ app.get('/alert',function(request, responseHttp){
 		trigger_imp('c','alert');
 		trigger_imp('0','alert');
 		
+		trigger_imp('bird','alert');
+		
+		
 		trigger_imp('teddy','alert');
 		
 		
@@ -503,6 +509,7 @@ app.get('/emergency', function(req, responseHttp) {
 		trigger_imp('0','emergency');
 		
 		trigger_imp('teddy','emergency');
+		trigger_imp('bird','emergency');
 		
 		
 		ifft('emergency');
@@ -573,6 +580,7 @@ app.post('/response/1', function(req, res) {
 				trigger_imp('0','emergency');
 				
 				trigger_imp('teddy','emergency');
+				trigger_imp('bird','emergency');
 				
 				
 				ifft('emergency');
@@ -1021,6 +1029,9 @@ function trigger_imp(id, status){
 	  break;
 	case 'teddy':
 	  imp_id='pBc7r-MmxK9B';
+	  break;
+	case 'bird':
+	  imp_id='hpr9JNkicnhp';
 	  break;
 	
 	default:
