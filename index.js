@@ -370,6 +370,9 @@ app.get('/reset',function(request, responseHttp){
 	alarm_happened=false;
 	triggered_red=false;
 	
+	ifft('quiet');
+	
+	
 	io.sockets.emit('newStatus',{'type':'cancelled','time':getTime()});
 	
 	
@@ -378,7 +381,6 @@ app.get('/reset',function(request, responseHttp){
 	trigger_imp('c','none');
 	trigger_imp('0','none');
 	
-	ifft('quiet');
 	
 	
 	responseHttp.send('Subscribers: '+phoneContact.length);
@@ -471,6 +473,7 @@ app.get('/happened_true', function(req, responseHttp) {
 app.get('/happened_false', function(req, responseHttp) {
 	
 	alarm_happened=false;
+	ifft('quiet');
 	
 	responseHttp.send('alarm_happened='+alarm_happened);
 });
