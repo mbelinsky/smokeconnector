@@ -360,6 +360,9 @@ app.get('/reset_clear',function(request, responseHttp){
 	trigger_imp('c','none');
 	trigger_imp('0','none');
 	
+	trigger_imp('teddy','none');
+	
+	
 	responseHttp.send('Subscribers: '+phoneContact.length);
 	
 });
@@ -381,6 +384,7 @@ app.get('/reset',function(request, responseHttp){
 	trigger_imp('c','none');
 	trigger_imp('0','none');
 	
+	trigger_imp('teddy','none');
 	
 	
 	responseHttp.send('Subscribers: '+phoneContact.length);
@@ -454,6 +458,9 @@ app.get('/alert',function(request, responseHttp){
 		trigger_imp('c','alert');
 		trigger_imp('0','alert');
 		
+		trigger_imp('teddy','alert');
+		
+		
 		ifft('alert');
 		
 		
@@ -473,6 +480,7 @@ app.get('/happened_true', function(req, responseHttp) {
 app.get('/happened_false', function(req, responseHttp) {
 	
 	alarm_happened=false;
+	
 	ifft('quiet');
 	
 	responseHttp.send('alarm_happened='+alarm_happened);
@@ -493,6 +501,9 @@ app.get('/emergency', function(req, responseHttp) {
 		trigger_imp('b','emergency');
 		trigger_imp('c','emergency');
 		trigger_imp('0','emergency');
+		
+		trigger_imp('teddy','emergency');
+		
 		
 		ifft('emergency');
 	}
@@ -560,6 +571,9 @@ app.post('/response/1', function(req, res) {
 				trigger_imp('b','emergency');
 				trigger_imp('c','emergency');
 				trigger_imp('0','emergency');
+				
+				trigger_imp('teddy','emergency');
+				
 				
 				ifft('emergency');
 				
@@ -1004,6 +1018,9 @@ function trigger_imp(id, status){
 	  break;
 	case '2b':
 	  imp_id=imp_2b;
+	  break;
+	case 'teddy':
+	  imp_id='pBc7r-MmxK9B';
 	  break;
 	
 	default:
