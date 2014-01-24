@@ -578,6 +578,9 @@ app.post('/response/1', function(req, res) {
 			break;
 		case 9:
 			io.sockets.emit('updateFeedback',{'number':number,'status':'emergency','time':getTime(),'name':'nil' });
+			
+			io.sockets.emit('newStatus',{'type':'emergency_red','time':getTime()});
+			
 			status='emergency';
 			report='an emergency';
 			
