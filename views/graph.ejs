@@ -1,0 +1,193 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Birdi at Hayes</title>
+
+
+    <link href="src/nv.d3.css" rel="stylesheet" type="text/css">
+</head>
+<style>
+
+body {
+  overflow-y:scroll;
+}
+
+text {
+  font: 12px sans-serif;
+}
+
+svg {
+  display: block;
+}
+
+#chart1 svg {
+  height: 500px;
+  min-width: 100px;
+  min-height: 100px;
+/*
+  margin: 50px;
+  Minimum height and width is a good idea to prevent negative SVG dimensions...
+  For example width should be =< margin.left + margin.right + 1,
+  of course 1 pixel for the entire chart would not be very useful, BUT should not have errors
+*/
+}
+
+</style>
+<body>
+
+  <div id="chart" class='with-3d-shadow with-transitions'>
+    <svg style="height: 500px;"></svg>
+  </div>
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+
+<script src="lib/d3.v3.js"></script>
+<script src="nv.d3.js"></script>
+<script src="src/tooltip.js"></script>
+<script src="src/utils.js"></script>
+<script src="src/models/legend.js"></script>
+<script src="src/models/axis.js"></script>
+<script src="src/models/scatter.js"></script>
+<script src="src/models/line.js"></script>
+<script src="src/models/lineWithFocusChart.js"></script>
+<script src="stream_layers.js"></script>
+<script>
+
+  nv.addGraph(function() {
+  
+
+  var chart = nv.models.lineWithFocusChart();
+
+  // chart.xAxis
+  //     .tickFormat(d3.format(',f'));
+
+      chart.xAxis
+        .tickFormat(function(d) { 
+          return d3.time.format('%e/%m %H:%M')(new Date(d)) 
+    });
+
+        chart.x2Axis
+              .tickFormat(function(d) { 
+          return d3.time.format('%a %e/%m')(new Date(d)) 
+    }).ticks(500);
+
+  chart.yAxis
+      .tickFormat(d3.format(',.2f'));
+
+  chart.y2Axis
+      .tickFormat(d3.format(',.2f'));
+
+
+  d3.select('#chart svg')
+      .datum(getM2Xdata())
+      .transition().duration(500)
+      .call(chart);
+
+
+  nv.utils.windowResize(chart.update);
+
+  return chart;
+});
+
+
+
+ // Pull data
+ // Add dates
+
+
+
+
+function getM2Xdata(){
+  var lastDate=(new Date()).toISOString();
+  var remaining;
+  var co2;
+
+   var GETNUMBER = 10;
+
+  function requestData() {
+    $.ajax({
+      url: 'http://api-m2x.att.com/v1/feeds/0a2520f6b2c08a75c7a5dad84f10af9e/streams/co2/values?start=2014-04-01T07:00:00Z&end='+lastDate+'&limit='+GETNUMBER,
+      headers:{'X-M2X-KEY' : 'a186fd70cd4e4956a4a40855cbde33a4'},
+      complete: function() {}
+    })
+    .done(function(data){
+
+      remaining=data.values.length; //Used to check if more requests need to be done
+
+
+      var prevTime=Date.parse(Date());
+      
+    //  console.log('Time difference is ', data.values[1].at.UTC()-data.values[0].at.UTC());
+
+      data.values.forEach(function(i)
+      {
+        var d=new Date(i.at);
+        if((lastDate-Date.parse(d))>=(10*60-5) ){
+          console.log(i.value);
+          co2.push({x: d, y: i.value});
+
+          lastDate=Date.parse(d);
+        }
+      })
+
+      if(remaining===GETNUMBER) requestData()
+  });
+
+  return [{
+      values: co2,      //values - represents the array of {x,y} data points
+      key: 'Carbon dioxide', //key  - the name of the series.
+      color: '#ff7f0e'  //color - optional: choose your own line color.
+    // },
+    // {
+    //   values: temp,
+    //   key: 'Temperature',
+    //   color: '#2ca02c'
+    // },
+    // {
+    //   values: hum,
+    //   key: 'Humidity',
+    //   color: '#7777ff'
+    }];
+  }
+}
+
+
+
+
+function sinAndCos() {
+  var sin = [],sin2 = [],
+      cos = [];
+
+  //Data is represented as an array of {x,y} pairs.
+  for (var i = 0; i < 100; i++) {
+    sin.push({x: i, y: Math.sin(i/10)});
+    sin2.push({x: i, y: Math.sin(i/10) *0.25 + 0.5});
+    cos.push({x: i, y: .5 * Math.cos(i/10)});
+  }
+
+  //Line chart data should be sent as an array of series objects.
+  return [
+    {
+      values: sin,      //values - represents the array of {x,y} data points
+      key: 'Carbon dioxide', //key  - the name of the series.
+      color: '#ff7f0e'  //color - optional: choose your own line color.
+    },
+    {
+      values: cos,
+      key: 'Temperature',
+      color: '#2ca02c'
+    },
+    {
+      values: sin2,
+      key: 'Humidity',
+      color: '#7777ff'
+    }
+  ];
+}
+
+  
+</script>
+
+
+
+  </body>
+</html>

@@ -35,14 +35,10 @@ var imp_c='-wRCgPSXRkC9';
 
 var imp_0='mDSTbW1EcX24';
 
-//var imp_2a=
-
-
 
 tokens.push({'id':'509f69be 051b5e5a 1235807e d3ea0396 d2ba1e04 482b2d34 bc62a54d 2c33e23b'});
 tokens.push({'id':'b859b4d6 e54592fa 47b67d2b 13f302e7 dbe5781c 00b2c839 a1a0ac77 a56b6c2e'});
 tokens.push({'id':'f62f113f 39062cd3 ae11e141 cbb05f05 d1956178 4823cccc fd383b36 4ff98bef'});
-
 tokens.push({'id':"9cf00a27 1338973d 592c9754 55cd8b70 65be5f12 e2e7a107 ec252a66 70fa9c76"});
 
 var phoneContact=[];
@@ -1150,6 +1146,13 @@ app.get('/', function(req, res){
 app.get('/control', function(req, res){
 	console.log(req.url);
 	res.render('control', {
+	});
+});
+
+
+app.get('/graph', function(req, res){
+	console.log(req.url);
+	res.render('graph', {
 	});
 });
 
