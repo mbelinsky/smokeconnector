@@ -10,6 +10,12 @@ app.use(express.bodyParser());
 app.use(express.static(__dirname + '/public'));
 
 
+var mongoose = require('mongoose');
+mongoose.connect('mongodb://54.213.213.231/birdidb');
+
+
+
+
 var port = 8080;
 host='http://54.213.213.231';
 var voice_url = host+'/voice/';
@@ -43,21 +49,6 @@ tokens.push({'id':"9cf00a27 1338973d 592c9754 55cd8b70 65be5f12 e2e7a107 ec252a6
 
 var phoneContact=[];
 phoneContact.push({'number':'13474398431','firstName':'Mark','place':'NY'});
-//Test
-
-
-
-//phoneContact.push({'number':'14252885022','firstName':'Bruce T.','place':'WA',});
-//phoneContact.push({'number':'15412922422','firstName':'Adonya','place':'OR'});
-//phoneContact.push({'number':'12132680395','firstName':'Brady','place':'CA'});
-//phoneContact.push({'number':'14159203651','firstName':'Justin','place':'CA'});
-
-//phoneContact.push({'number':'12403544364','firstName':'Bryan','place':'WA'});
-
-//phoneContact.push({'number':'13474398431','firstName':'Mark','place':'NY'});
-
-
-
 
 var contacts=[];
 
@@ -99,18 +90,21 @@ app.configure(function () {
 });
 
 
-/*
-var mongodb = require('mongodb');
-             var db = new mongodb.Db('nodejitsu_justinlv_nodejitsudb3831052954',
-               new mongodb.Server('ds059887.mongolab.com', 59887, {})
-             );
-             db.open(function (err, db_p) {
-               if (err) { throw err; }
-               db.authenticate('nodejitsu_justinlv', '53fbpevg76un2cappilhsukce6', function (err, replies) {
-                 console.log('MongoDB connected and authenticated.')
-               });
-             });
-*/
+
+// var mongodb = require('mongodb');
+// var db = new mongodb.Db('mydb',
+//    new mongodb.Server('ds059887.mongolab.com', 59887, {})
+// );
+
+
+// db.open(function (err, db_p) {
+//    if (err) { throw err; }
+//    db.authenticate('nodejitsu_justinlv', '53fbpevg76un2cappilhsukce6', function (err, replies) {
+//      console.log('MongoDB connected and authenticated.')
+//    });
+
+//  });
+
 
 
 app.configure('localdevelopment', function(){
@@ -369,7 +363,6 @@ app.get('/reset_clear',function(request, responseHttp){
 	
 	
 	responseHttp.send('Subscribers: '+phoneContact.length);
-	
 });
 
 
@@ -526,6 +519,13 @@ app.get('/emergency', function(req, responseHttp) {
 
 
 
+
+
+
+
+
+
+
 //Responses from Twilio in the phonecall
 
 app.post('/call/new', function(req, res) {
@@ -642,6 +642,15 @@ app.get('/ifft/:statusType', function (req, res) {
 
 
 
+
+
+
+
+
+
+
+
+
 //APNS tests
 
 
@@ -699,10 +708,6 @@ app.get('/test/newSignup/:number/:place', function (req, res) {
 app.get('/test/updateFeedback/:number/:content', function (req, res) {
 	
 	io.sockets.emit('updateFeedback',{'number':req.params.number,'status':req.params.content,'name':'Justin Alvey','time':getTime() });
-	
-	
-	
-	
 	var agent = app.get('apn');
   	agent.createMessage()
     .device(myToken)
@@ -1133,6 +1138,78 @@ app.get('/trigger_imp/:id/:status', function (req, res) {
 	res.send('');
 	
 });
+
+
+
+
+
+//Adding data to MongoDB
+
+
+app.post( '/birdis/:id/:sensor/values', function(req,res){
+
+	req.body.time //If omitted, current time
+	req.body.value
+
+});
+
+
+
+app.get( '/birdis/test', function(req,res){
+
+	// req.query.end 	//defaults to current time
+
+	// req.query.start  //optional
+
+	// req.query.limit 	//defaults to 100
+
+	// req.query.interval		//defaults to no filter
+
+
+	var Cat = mongoose.model('Cat', { name: String });
+
+	var kitty = new Cat({ name: 'Zildjian' });
+	kitty.save(function (err) {
+  		if (err) // ...
+  	console.log('meow');
+	});
+	
+
+
+});
+
+
+
+app.get( '/birdis/:id/:sensor/values', function(req,res){
+
+	// req.query.end 	//defaults to current time
+
+	// req.query.start  //optional
+
+	// req.query.limit 	//defaults to 100
+
+	// req.query.interval		//defaults to no filter
+
+
+	var Cat = mongoose.model('Cat', { name: String });
+
+	var kitty = new Cat({ name: 'Zildjian' });
+	kitty.save(function (err) {
+  		if (err) res.send("Error!!")
+  		else res.send("Added!!")// ...
+	});
+	
+
+
+});
+
+
+
+
+
+
+
+// Standard views
 
 
 app.get('/', function(req, res){

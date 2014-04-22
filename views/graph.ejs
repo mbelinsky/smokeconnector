@@ -52,7 +52,11 @@ svg {
 <script src="stream_layers.js"></script>
 <script>
 
-  nv.addGraph(function() {
+
+  var lastDate=(new Date()).toISOString();
+
+
+nv.addGraph(function() {
   
 
   var chart = nv.models.lineWithFocusChart();
@@ -97,57 +101,56 @@ svg {
 
 
 function getM2Xdata(){
-  var lastDate=(new Date()).toISOString();
   var remaining;
-  var co2;
+  var co2=[];
 
    var GETNUMBER = 10;
 
-  function requestData() {
+  function requestData(lastDate1) {
     $.ajax({
-      url: 'http://api-m2x.att.com/v1/feeds/0a2520f6b2c08a75c7a5dad84f10af9e/streams/co2/values?start=2014-04-01T07:00:00Z&end='+lastDate+'&limit='+GETNUMBER,
-      headers:{'X-M2X-KEY' : 'a186fd70cd4e4956a4a40855cbde33a4'},
+      url: 'http://api-m2x.att.com/v1/feeds/0a2520f6b2c08a75c7a5dad84f10af9e/streams/co2/values?start=2014-04-01T07:00:00Z&end='+lastDate1+'&limit='+GETNUMBER,
+      headers:{'X-M2X-KEY' : '7d6cee57b6e4fbef4f055be8660d876d'},
       complete: function() {}
     })
     .done(function(data){
-
       remaining=data.values.length; //Used to check if more requests need to be done
-
-
-      var prevTime=Date.parse(Date());
       
     //  console.log('Time difference is ', data.values[1].at.UTC()-data.values[0].at.UTC());
-
+      var counter=0;
       data.values.forEach(function(i)
       {
         var d=new Date(i.at);
         if((lastDate-Date.parse(d))>=(10*60-5) ){
           console.log(i.value);
-          co2.push({x: d, y: i.value});
-
+          co2.push({x: counter, y: i.value});
+          counter++;
           lastDate=Date.parse(d);
         }
       })
 
-      if(remaining===GETNUMBER) requestData()
+      if(remaining==432) {requestData(lastDate)}
+        else {
+            return [{
+              values: co2,      //values - represents the array of {x,y} data points
+              key: 'Carbon dioxide', //key  - the name of the series.
+              color: '#ff7f0e'  //color - optional: choose your own line color.
+            },
+            {
+              values: co2,
+              key: 'Temperature',
+              color: '#2ca02c'
+            },
+            {
+              values: co2,
+              key: 'Humidity',
+              color: '#7777ff'
+            }];
+        }
   });
 
-  return [{
-      values: co2,      //values - represents the array of {x,y} data points
-      key: 'Carbon dioxide', //key  - the name of the series.
-      color: '#ff7f0e'  //color - optional: choose your own line color.
-    // },
-    // {
-    //   values: temp,
-    //   key: 'Temperature',
-    //   color: '#2ca02c'
-    // },
-    // {
-    //   values: hum,
-    //   key: 'Humidity',
-    //   color: '#7777ff'
-    }];
   }
+
+  requestData(lastDate);
 }
 
 
