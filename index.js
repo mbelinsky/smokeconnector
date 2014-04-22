@@ -10,8 +10,8 @@ app.use(express.bodyParser());
 app.use(express.static(__dirname + '/public'));
 
 
-var mongoose = require('mongoose');
-mongoose.connect('mongodb://54.213.213.231/birdidb');
+// var mongoose = require('mongoose');
+// mongoose.connect('mongodb://54.213.213.231/birdidb');
 
 
 
@@ -1166,13 +1166,13 @@ app.get( '/birdis/test', function(req,res){
 	// req.query.interval		//defaults to no filter
 
 
-	var Cat = mongoose.model('Cat', { name: String });
+	// var Cat = mongoose.model('Cat', { name: String });
 
-	var kitty = new Cat({ name: 'Zildjian' });
-	kitty.save(function (err) {
-  		if (err) // ...
-  	console.log('meow');
-	});
+	// var kitty = new Cat({ name: 'Zildjian' });
+	// kitty.save(function (err) {
+ //  		if (err) // ...
+ //  	console.log('meow');
+	// });
 	
 
 
@@ -1191,13 +1191,13 @@ app.get( '/birdis/:id/:sensor/values', function(req,res){
 	// req.query.interval		//defaults to no filter
 
 
-	var Cat = mongoose.model('Cat', { name: String });
+	// var Cat = mongoose.model('Cat', { name: String });
 
-	var kitty = new Cat({ name: 'Zildjian' });
-	kitty.save(function (err) {
-  		if (err) res.send("Error!!")
-  		else res.send("Added!!")// ...
-	});
+	// var kitty = new Cat({ name: 'Zildjian' });
+	// kitty.save(function (err) {
+ //  		if (err) res.send("Error!!")
+ //  		else res.send("Added!!")// ...
+	// });
 	
 
 
