@@ -660,7 +660,8 @@ app.post('/post_test', function(req, responseHttp) {
 app.get('/utc_date', function(req, responseHttp) {
 //	req.body.token
 	console.log("Asked for date...");
-	responseHttp.send(new Date().getTime());
+	var t=new Date().getTime();
+	responseHttp.send(t.toString);
 });
 
 
