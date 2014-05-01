@@ -642,7 +642,13 @@ app.get('/ifft/:statusType', function (req, res) {
 
 
 
+//M2X emulator test
 
+app.post('/v1/feeds/36ebcaadca18978f472ddfaa297e7fa2', function(req, responseHttp) {
+//	req.body.token
+	console.log(req.body.values);
+	responseHttp.send('I got that the CO2 was '+ req.body.values.co2.value);
+});
 
 
 
