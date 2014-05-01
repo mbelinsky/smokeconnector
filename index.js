@@ -661,7 +661,7 @@ app.get('/utc_date', function(req, responseHttp) {
 //	req.body.token
 	console.log("Asked for date...");
 	var t=new Date().getTime();
-	responseHttp.send(t.toString);
+	responseHttp.send(t.toString());
 });
 
 
