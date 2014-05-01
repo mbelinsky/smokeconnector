@@ -653,8 +653,8 @@ app.post('/v1/feeds/36ebcaadca18978f472ddfaa297e7fa2', function(req, responseHtt
 
 app.post('/post_test', function(req, responseHttp) {
 //	req.body.token
-	console.log("Got POST test");
-	responseHttp.send('I got that the CO2 was x');
+	console.log("Got POST test: "+req.body.values);
+	responseHttp.send('I got that the CO2 was '+req.body.values);
 });
 
 
