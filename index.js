@@ -647,13 +647,18 @@ app.get('/ifft/:statusType', function (req, res) {
 app.post('/v1/feeds/36ebcaadca18978f472ddfaa297e7fa2', function(req, responseHttp) {
 //	req.body.token
 	console.log(req.body.values);
+
 	responseHttp.send('I got that the CO2 was '+ req.body.values.co2.value);
 });
 
 
 app.post('/post_test', function(req, responseHttp) {
 //	req.body.token
-	console.log("Got POST test: "+req.body.values);
+	console.log("Got POST test: "+req);
+	console.log("Got POST test with values: "+req.body.values);
+	io.sockets.emit('logthis',{'obj':req.body,'info':'request dot body' });
+	io.sockets.emit('logthis',{'obj':req,'info':'request ' });
+
 	responseHttp.send('I got a value of '+req.body.values);
 });
 
