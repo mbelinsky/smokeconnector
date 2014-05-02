@@ -654,10 +654,9 @@ app.post('/v1/feeds/36ebcaadca18978f472ddfaa297e7fa2', function(req, responseHtt
 
 app.post('/post_test', function(req, responseHttp) {
 //	req.body.token
-	console.log("Got POST test: "+req);
+	console.log("Got POST test: "+req.body);
 	console.log("Got POST test with values: "+req.body.values);
 	io.sockets.emit('logthis',{'obj':req.body,'info':'request dot body' });
-	io.sockets.emit('logthis',{'obj':req,'info':'request ' });
 
 	responseHttp.send('I got a value of '+req.body.values);
 });
