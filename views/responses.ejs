@@ -89,6 +89,11 @@
 					document.body.style.background = '#f8cf73';
 					document.getElementById("bottom").style.backgroundColor="#f8cf73";
 				})
+				.on('logthis',function(msg){ 
+					console.log(msg);
+					console.log(msg.obj);
+
+				})
 			.on('updateFeedback', function (msg) {
 					var contact=$('#n'+msg.number.replace('+','').replace('(','').replace(')','').replace(' ','') );
 					contact.children('p.status').html(capitaliseFirstLetter(msg.status));
