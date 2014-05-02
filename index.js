@@ -148,14 +148,14 @@ app.set('view options', {
 
 
 
-app.post('/signupcall', function(req, res) {
+// app.post('/signupcall', function(req, res) {
 
-  console.log(req.is('text/*'));
-  console.log(req.is('json'));
-  console.log('RB: ' + req.rawBody);
-  console.log('B: ' + JSON.stringify(req.body));
-  res.send('got it: '+req.rawBody);
-});
+//   console.log(req.is('text/*'));
+//   console.log(req.is('json'));
+//   console.log('RB: ' + req.rawBody);
+//   console.log('B: ' + JSON.stringify(req.body));
+//   res.send('got it: '+req.rawBody);
+// });
 
 
 //Real shit starts here. This is for the NYTM demo with the iPhone app.
@@ -163,94 +163,94 @@ app.post('/signupcall', function(req, res) {
 
 //Posts from Twilio
 
-// app.post('/signupcall', function(req, res) {
+app.post('/signupcall', function(req, res) {
 	
-// 	var resp = new twilio.TwimlResponse();
-// 	resp.play('/final.mp3');
-// 	var formattedNumber=req.body.From.replace('+','').replace('(','').replace(')','').replace(' ','').replace('-','');
-	
-	
-// 	var firstName='Phone signup';
-// 	if(req.body.CallerName.length>0){
-// 		firstName=req.body.CallerName;
-// 	}
+	var resp = new twilio.TwimlResponse();
+	resp.play('/final.mp3');
+	var formattedNumber=req.body.From.replace('+','').replace('(','').replace(')','').replace(' ','').replace('-','');
 	
 	
-// 	//TODO: Check if exists
-// 	if(phoneContact.length<300){
+	var firstName='Phone signup';
+	if(req.body.CallerName.length>0){
+		firstName=req.body.CallerName;
+	}
+	
+	
+	//TODO: Check if exists
+	if(phoneContact.length<300){
 		
-// 		var place=req.body.CallerState;//req.body.CallerZip+', ' +
-// 		//APN add. Send formatted number and place
+		var place=req.body.CallerState;//req.body.CallerZip+', ' +
+		//APN add. Send formatted number and place
 		
-// //		io.sockets.emit('newSignup',{'number':formattedNumber,'name':firstName, 'place':place ,'time':getTime()});
+//		io.sockets.emit('newSignup',{'number':formattedNumber,'name':firstName, 'place':place ,'time':getTime()});
 		
 		
-// 		var agent = app.get('apn');
-// 	  	agent.createMessage()
-// 	    .device(myToken)
+		var agent = app.get('apn');
+	  	agent.createMessage()
+	    .device(myToken)
 
-// 		.set('notificationType','newSignup')
-// 		.set('number',formattedNumber)
-// 		.set('place',place)
-// 		.alert('+'+formattedNumber+' signed up from '+place)
-// 	//	.alert('action-loc-key','Action text')
-// 	    .send(function (err) {
-// 		    if (err && err.toJSON) {  } 
-// 			else if (err) { }
-// 			else {}
-// 	    });
-// 		io.sockets.emit('newContact',{'number':formattedNumber,'firstName':firstName, 'place':place});
+		.set('notificationType','newSignup')
+		.set('number',formattedNumber)
+		.set('place',place)
+		.alert('+'+formattedNumber+' signed up from '+place)
+	//	.alert('action-loc-key','Action text')
+	    .send(function (err) {
+		    if (err && err.toJSON) {  } 
+			else if (err) { }
+			else {}
+	    });
+		io.sockets.emit('newContact',{'number':formattedNumber,'firstName':firstName, 'place':place});
 		
 		
-// 		//iOS
-// 		io.sockets.emit('newSignup',{'number':formattedNumber,'name':firstName, 'place':place});
+		//iOS
+		io.sockets.emit('newSignup',{'number':formattedNumber,'name':firstName, 'place':place});
 	
-// 		phoneContact.push({'number':formattedNumber,'firstName':firstName,'place':place});
+		phoneContact.push({'number':formattedNumber,'firstName':firstName,'place':place});
 		
-// 		resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +'. Welcome to the Birdy demo. If our device detects a fire, carbon monoxide or air quality emergency, we\'ll give you a call. To learn more, go to get birdy dot com.');
-// 	}
-// 	else{
-// 		resp.say({voice:'woman', language:'en'},'Hi there. There are already 300 people signed up. Not to worry, you can just sit back and enjoy the demo. To learn more, go to get birdy dot com.');
-// 	//	thankOnly.push(req.body.From);
-// 	}
+		resp.say({voice:'woman', language:'en'},'Hi there. Thanks for signing up from '+req.body.CallerCity +'. Welcome to the Birdy demo. If our device detects a fire, carbon monoxide or air quality emergency, we\'ll give you a call. To learn more, go to get birdy dot com.');
+	}
+	else{
+		resp.say({voice:'woman', language:'en'},'Hi there. There are already 300 people signed up. Not to worry, you can just sit back and enjoy the demo. To learn more, go to get birdy dot com.');
+	//	thankOnly.push(req.body.From);
+	}
 	
-// 	res.type('text/xml');
-// 	res.send(200, resp.toString());
-// });
+	res.type('text/xml');
+	res.send(200, resp.toString());
+});
 
 
 
-// app.post('/newsms', function(req, res) {
-// 	console.log('New message:'+req.body.Body);
+app.post('/newsms', function(req, res) {
+	console.log('New message:'+req.body.Body);
 	
-// 	var message=req.body.Body;
-// 	var number=req.body.From.replace('+','').replace('(','').replace(')','').replace(' ','').replace('-','');
+	var message=req.body.Body;
+	var number=req.body.From.replace('+','').replace('(','').replace(')','').replace(' ','').replace('-','');
 	
-// 	var toSend='';
+	var toSend='';
 	
-// 	//Filter number to remove +'s etc.
-// 	var data = phoneContact.filter(function(contact){return(contact.number===number);});
-// 	if (data.length>0){
-// 		//Send message via APNS to app, with data.number and data
-// 			var agent = app.get('apn');
-// 		  	agent.createMessage()
-// 		    .device(myToken)
-// 			.set('notificationType','newMessage')
-// 			.set('number',number)
-// 			.set('content',message)
-// 			.alert('+'+number+': '+message)
-// 		//	.alert('action-loc-key','Action text')
-// 		    .send(function (err) {
-// 			    if (err && err.toJSON) {} 
-// 				else if (err) {}
-// 				else {}
-// 		    });
-// 	} else {
-// 		//Send thank you message back (or not), and don't do anything else.
-// 	}
+	//Filter number to remove +'s etc.
+	var data = phoneContact.filter(function(contact){return(contact.number===number);});
+	if (data.length>0){
+		//Send message via APNS to app, with data.number and data
+			var agent = app.get('apn');
+		  	agent.createMessage()
+		    .device(myToken)
+			.set('notificationType','newMessage')
+			.set('number',number)
+			.set('content',message)
+			.alert('+'+number+': '+message)
+		//	.alert('action-loc-key','Action text')
+		    .send(function (err) {
+			    if (err && err.toJSON) {} 
+				else if (err) {}
+				else {}
+		    });
+	} else {
+		//Send thank you message back (or not), and don't do anything else.
+	}
 
-// 	res.send(200);
-// });
+	res.send(200);
+});
 
 app.get('/twilioTest', function(req, res) {
 	
