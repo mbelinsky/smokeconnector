@@ -6,12 +6,31 @@ var express = require('express')
   , https = require('https')
   , server = http.createServer(app)
   , io = require('socket.io').listen(server, { log: true });
-app.use(express.bodyParser());
+//app.use(express.bodyParser());
+  app.use(rawBody);
+  app.use(express.methodOverride());
+
+
 app.use(express.static(__dirname + '/public'));
 
 
 // var mongoose = require('mongoose');
 // mongoose.connect('mongodb://54.213.213.231/birdidb');
+
+
+
+
+function rawBody(req, res, next) {
+  req.setEncoding('utf8');
+  req.rawBody = '';
+  req.on('data', function(chunk) {
+    req.rawBody += chunk;
+  });
+  req.on('end', function(){
+    next();
+  });
+}
+
 
 
 
@@ -652,14 +671,23 @@ app.post('/v1/feeds/36ebcaadca18978f472ddfaa297e7fa2', function(req, responseHtt
 });
 
 
-app.post('/post_test', function(req, responseHttp) {
-//	req.body.token
-	console.log("Got POST test: "+req.body);
-	console.log("Got POST test with values: "+req.body.values);
-	io.sockets.emit('logthis',{'obj':req.body,'info':'request dot body' });
-
-	responseHttp.send('I got a value of '+req.body.values);
+app.post('/post_test', function(req, res) {
+  console.log(req.is('text/*'));
+  console.log(req.is('json'));
+  console.log('RB: ' + req.rawBody);
+  console.log('B: ' + JSON.stringify(req.body));
+  res.send('got it: '+req.rawBody);
 });
+
+
+// app.post('/post_test', function(req, responseHttp) {
+// //	req.body.token
+// 	console.log("Got POST test: "+req.body);
+// 	console.log("Got POST test with values: "+req.body.values);
+// 	io.sockets.emit('logthis',{'obj':req.body,'info':'request dot body' });
+
+// 	responseHttp.send('I got a value of '+req.body.values);
+// });
 
 app.get('/utc_date', function(req, responseHttp) {
 //	req.body.token
