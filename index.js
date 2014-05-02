@@ -682,23 +682,23 @@ app.post('/v1/feeds/36ebcaadca18978f472ddfaa297e7fa2', function(req, responseHtt
 });
 
 
-app.post('/post_test', function(req, res) {
-  console.log(req.is('text/*'));
-  console.log(req.is('json'));
-  console.log('RB: ' + req.rawBody);
-  console.log('B: ' + JSON.stringify(req.body));
-  res.send('got it: '+req.rawBody);
-});
-
-
-// app.post('/post_test', function(req, responseHttp) {
-// //	req.body.token
-// 	console.log("Got POST test: "+req.body);
-// 	console.log("Got POST test with values: "+req.body.values);
-// 	io.sockets.emit('logthis',{'obj':req.body,'info':'request dot body' });
-
-// 	responseHttp.send('I got a value of '+req.body.values);
+// app.post('/post_test', function(req, res) {
+//   console.log(req.is('text/*'));
+//   console.log(req.is('json'));
+//   console.log('RB: ' + req.rawBody);
+//   console.log('B: ' + JSON.stringify(req.body));
+//   res.send('got it: '+req.rawBody);
 // });
+
+
+app.post('/post_test', function(req, responseHttp) {
+//	req.body.token
+	console.log("Got POST test: "+req.body);
+	console.log("Got POST test with values: "+req.body.values);
+	io.sockets.emit('logthis',{'obj':req.body,'info':'request dot body' });
+
+	responseHttp.send('I got a value of '+req.body.values);
+});
 
 app.get('/utc_date', function(req, responseHttp) {
 //	req.body.token
