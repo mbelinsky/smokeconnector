@@ -6,9 +6,9 @@ var express = require('express')
   , https = require('https')
   , server = http.createServer(app)
   , io = require('socket.io').listen(server, { log: true });
-//app.use(express.bodyParser());
-  app.use(rawBody);
-  app.use(express.methodOverride());
+app.use(express.bodyParser());
+  // app.use(rawBody);
+  // app.use(express.methodOverride());
 
 
 app.use(express.static(__dirname + '/public'));
@@ -20,16 +20,16 @@ app.use(express.static(__dirname + '/public'));
 
 
 
-function rawBody(req, res, next) {
-  req.setEncoding('utf8');
-  req.rawBody = '';
-  req.on('data', function(chunk) {
-    req.rawBody += chunk;
-  });
-  req.on('end', function(){
-    next();
-  });
-}
+// function rawBody(req, res, next) {
+//   req.setEncoding('utf8');
+//   req.rawBody = '';
+//   req.on('data', function(chunk) {
+//     req.rawBody += chunk;
+//   });
+//   req.on('end', function(){
+//     next();
+//   });
+// }
 
 
 
@@ -164,6 +164,9 @@ app.set('view options', {
 //Posts from Twilio
 
 app.post('/signupcall', function(req, res) {
+
+	io.sockets.emit('logthis',{'obj':req.body,'info':'New caller' });
+
 	
 	var resp = new twilio.TwimlResponse();
 	resp.play('/final.mp3');
