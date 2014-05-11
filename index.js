@@ -357,11 +357,7 @@ app.get('/thank', function(req, responseHttp) {
 			client.sms.messages.create({
 			    to:tosms.number,
 			    from:twilioNumberSmoke,
-<<<<<<< HEAD
 			    body:'Thanks from Birdi. We\'re here to keep your home healthy & safe. Reserve your Birdi at getbirdi.com'
-=======
-			    body:'Thanks for exploring how Birdi can keep your home healthy & safe. Pre-order yours today at www.getbirdi.com'
->>>>>>> FETCH_HEAD
 			}, function(error, message) {});
 		});
 	}
