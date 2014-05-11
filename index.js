@@ -35,7 +35,7 @@ app.use(express.static(__dirname + '/public'));
 
 
 
-var port = 80;
+var port = 8080;
 host='http://54.213.213.231';
 var voice_url = host+'/voice/';
 
