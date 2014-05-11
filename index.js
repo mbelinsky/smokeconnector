@@ -35,7 +35,7 @@ app.use(express.static(__dirname + '/public'));
 
 
 
-var port = 8080;
+var port = 80;
 host='http://54.213.213.231';
 var voice_url = host+'/voice/';
 
@@ -357,13 +357,13 @@ app.get('/thank', function(req, responseHttp) {
 			client.sms.messages.create({
 			    to:tosms.number,
 			    from:twilioNumberSmoke,
-			    body:'Thanks from Birdi. We\'re here to keep your home healthy & safe. Be the first to reserve your Birdi at www.indiegogo.com/projects/birdi'
+			    body:'Thanks from Birdi. We\'re here to keep your home healthy & safe. Reserve your Birdi at getbirdi.com'
 			}, function(error, message) {});
 		});
 	}
 	
 	phoneContact=[];
-	phoneContact.push({'number':'13474398431','firstName':'Mark','place':'NY'});
+	phoneContact.push({'number':'13474398431','firstName':'ShopLocket','place':'CA'});
 	
 	
 	responseHttp.send('Thanked '+ length_temp + ' people?: '+thanked_temp);
