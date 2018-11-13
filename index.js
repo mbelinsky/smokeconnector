@@ -18,18 +18,18 @@ app.configure('development', function(){
 
 
 
-var justinNumber = "+13476819080";
-var markNumber = "+13474669327";
+var justinNumber = "+";
+var markNumber = "+";
 var twilioNumber = '+14074776653';
 
 
 var phoneNumbers=[justinNumber];
 
 //var twilio = require('twilio');
-//var client = new twilio.RestClient('twilio')('ACeac2f16de43f1d54afc199dc5f7ae200', '8d7f041fe6dd708664d01d472a2ed904');
+//var client = new twilio.RestClient('twilio')('#', '#');
 
 var twilio = require('twilio');
-var client= new twilio.RestClient('ACeac2f16de43f1d54afc199dc5f7ae200', '8d7f041fe6dd708664d01d472a2ed904');
+var client= new twilio.RestClient('#', '#');
 
 var voiceMsg = 'Your smoke alarm has been set off. Notifications will be sent out to your selected contacts. Press 7 to cancel this alarm. Press 3 if you are not sure.';
 
